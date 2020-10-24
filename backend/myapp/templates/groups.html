@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %} About {% endblock title %}
+
+{% block body %}
+
+<b><p>This is my "{{group}}"  page</p></b>
+
+{% for pupil in people %}
+{{ pupil }}<br>
+{% endfor %}
+
+{% if group.created_by_user == request.user %}
+<h2>Add new user</h2>
+<form action = "/get/{{id}}" method = "POST">
+{% csrf_token %}
+  {% for pupil in users %}
+  <div class="form-check">
+  <input class="form-check-input" type="checkbox" name="inputs" value="{{ pupil.id }}" id="{{pupil.id}}">
+  <label class="form-check-label">
+    {{ pupil }}
+  </label>
+</div>
+{% endfor %}
+<button type = "submit">Add user</button> 
+</form>
+ {% endif %}
+
+<form action = "/get/{{id}}/start" method = "POST">
+{% csrf_token %}
+<button type = "submit" >Start Commitie</button> 
+</form>
+
+<!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+  Launch demo modal
+</button> -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        User selected at random
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Bid</button>
+        <button type="button" class="btn btn-primary">Transfer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock body %}
+
+

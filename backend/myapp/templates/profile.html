@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block body %}
+
+<h1>Profile page</h1>
+
+<form method = 'POST'>
+    {% csrf_token %} 
+  <div class="form-group">
+    <label for="acnum">Account Number</label>
+    <input type="text" class="form-control" id="acnum" name = "acnum" aria-describedby="acnum" placeholder="Enter a/c num">
+    <small id="emailHelp" class="form-text text-muted">We'll never share your a/c num with anyone else.</small>
+  </div>
+  <div class="form-group">
+    <label for="ifsc">IFSC</label>
+    <input type="text" class="form-control" id="ifsc" name = "ifsc" placeholder="ifsc">
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<!-- 
+{% if userInfo %}
+{% for u in userInfo %}
+<p> {{u.ifsc}} </p>
+<p> {{u.account_number}} </p>
+<p> {{u.u_id.username}} </p>
+{% endfor %}
+
+{% else %}
+<p>No user data</p>
+{% endif %} -->
+
+{% endblock body %}

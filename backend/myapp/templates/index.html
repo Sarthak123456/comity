@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %} Home {% endblock title %}
+
+{% block body %}
+<h1> Welcome {{request.user}}</h1>
+<a href='logout'>Logout</a>
+
+{% comment %} {% for user in users %}
+{{user.id }} : {{ user.username }};
+{% endfor %} {% endcomment %}
+
+<form action = "/addGroup" method = "post">
+{% csrf_token %}
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" id="name" aria-describedby="name" name = "name" placeholder="Enter name" required>
+  </div>
+  <div class="form-group">
+    <label for="amt">Amount</label>
+    <input type="number" class="form-control" id="amt" name = "amt" placeholder="Amount">
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<!-- // For showwing groups with the logged-in user -->
+<!-- {% for group in groups %}
+<a href="/get/{{group.id}}"> {{group.name}}, {{group.amount}}</a> <br>
+{% endfor %} -->
+
+{% for group in otherGroups %}
+<a href="/get/{{group.id}}"> {{group.name}}, {{group.amount}}, {{group.created_at}} , {{group.updated_at}}</a> <br>
+{% endfor %}
+
+
+
+{% endblock body %}
+
+

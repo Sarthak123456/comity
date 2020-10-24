@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %} Services {% endblock title %}
+
+{% block body %}
+
+
+
+<div class="container-fluid px-0 mb-3">
+    <img src="https://source.unsplash.com/1600x300/?contact" class="d-block w-100" alt="...">
+
+    <div class="container py-6">
+
+        <h1 class"text-center">Request our service</h1>
+
+        <form method='post' action = '/services'>
+        {% csrf_token %}
+             <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" name = 'name' placeholder="Enter your name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="number" class="form-control" id="phone" name = 'phone' placeholder="Enter your Phone Number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" class="form-control" id="email" name = 'email' placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1">Request our service</label>
+                <textarea class="form-control" id="desc" name= 'desc' rows="3" required></textarea>
+            </div>
+
+             <button class="btn btn-primary" type="submit">Submit</button>
+        </form>
+
+
+    </div>{% comment %} container ends {% endcomment %}
+</div> {% comment %} container-fluid ends {% endcomment %}
+{% endblock body %}

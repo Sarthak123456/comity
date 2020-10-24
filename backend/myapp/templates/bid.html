@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %} Bid {% endblock title %}
+
+{% block body %}
+
+<b><p>{{name}} chose to bid</p></b>
+{% comment %} <a href='/bid'>bid</a> <br> <a href='/transfer/{{winner}}'> transfer </a> {% endcomment %}
+
+
+{% if userInGroup.superuser == True %}
+
+{% if userInGroup.bidAmount > 0 %}
+
+<p> You chose to bid ₹{{userInGroup.bidAmount}} this month </p>
+<a href='/get/{{id}}/transfer/{{name}}' target='_blank'>Transfer</a>
+
+{% else %}
+<form action = "/get/{{id}}/bid" method = "POST">
+{% csrf_token %} 
+  <div class="form-group">
+    <label for="bidAmt">Bid Amount</label>
+    <input type="number" class="form-control" id="bidAmt" name = "bidAmt" placeholder="Bid Amount">
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endif %}
+
+{% endif %}
+
+
+
+
+
+<p>{{name}}</p> can bid
+<p> Total AMT = {{ totalAmt }}</p>
+
+{% if userInGroup.superuser == False %}
+<h2>{{name}}, </h2> 
+<h2> Please subscribe </h2>
+
+{% endif %}
+
+{% endblock body %}

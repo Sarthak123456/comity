@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %} Transfer {% endblock title %}
+
+{% block body %}
+
+<b><p>{{winner}} chosen at random</p></b>
+
+{% if user_info %}
+{% for u in user_info %}
+<p> {{u.ifsc}} </p>
+<p> {{u.account_number}} </p>
+<p> {{u.u_id.username}} </p>
+{% endfor %}
+
+{% else %}
+<p>No user data</p>
+{% endif %}
+
+
+{% endblock body %}
