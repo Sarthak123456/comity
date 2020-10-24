@@ -12,6 +12,14 @@
 
 {% if userInGroup.bidAmount > 0 %}
 
+{% for u in usersInGroup %}
+{% if u.bidAmount > 0%}
+<p> {{u.u_id.username}} bid {{u.bidAmount}}</p>
+
+{% endif %}
+
+{% endfor %} 
+
 <p> You chose to bid ₹{{userInGroup.bidAmount}} this month </p>
 <a href='/get/{{id}}/transfer/{{name}}' target='_blank'>Transfer</a>
 
@@ -20,26 +28,22 @@
 {% csrf_token %} 
   <div class="form-group">
     <label for="bidAmt">Bid Amount</label>
-    <input type="number" class="form-control" id="bidAmt" name = "bidAmt" placeholder="Bid Amount">
+    <input type="number" class="form-control" id="bidAmt" name = "bidAmt" placeholder="Bid Amount" required>
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
 {% endif %}
 
-{% endif %}
-
-
-
-
-
 <p>{{name}}</p> can bid
 <p> Total AMT = {{ totalAmt }}</p>
+{% endif %}
 
 {% if userInGroup.superuser == False %}
 <h2>{{name}}, </h2> 
 <h2> Please subscribe </h2>
 
 {% endif %}
+
 
 {% endblock body %}

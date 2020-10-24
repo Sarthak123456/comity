@@ -242,15 +242,26 @@ def bidMoney(request, id):
         elif (int(bidAmount) > totalAmount):
             messages.success(request, "BidAmt should be less than total amount")
         else:
-            userInGroup.bidAmount = int(bidAmount)
-            userInGroup.save()
-            messages.success(request, "{} bidAmt".format(bidAmount))
-            returnToUser = int(bidAmount) / int(len(usersInGroup))
-            messages.success(request, "{} returnToUser".format(returnToUser))
+            minBidAmountUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').first()
+            higgestBidderUser = minBidAmountUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
+            if minBidAmountUser:
+                if int(bidAmount) <=  int(minBidAmountUser.bidAmount):
+                    messages.success(request, "Bid more than {}".format(minBidAmountUser.bidAmount))
+                    print("minBidAmount = " , minBidAmountUser.bidAmount)
+                    print("bidAmount = " , bidAmount)
+                else:
+                    userInGroup.bidAmount = int(bidAmount)
+                    userInGroup.save()
+            else:
+                userInGroup.bidAmount = int(bidAmount)
+                userInGroup.save()
+                messages.success(request, "{} bidAmt".format(bidAmount))
+                returnToUser = int(bidAmount) / int(len(usersInGroup))
+                messages.success(request, "{} returnToUser".format(returnToUser))
     # checkSuperuser = usersInGroup.objects.all()
     # messages.success(request, "{} usersInGroup".format(len(usersInGroup)))
-    # messages.success(request, "{} minBidAmount".format(minBidAmount))
-    context = {"name" : user, "userInGroup" : userInGroup, "totalAmt" : totalAmount , "id" : id, "bidAmount": int(bidAmount)}
+        messages.success(request, "{} higgestBidderUser with bid {}".format(higgestBidderUser, higgestBidderUser.bidAmount))
+    context = {"name" : user, "userInGroup" : userInGroup, "totalAmt" : totalAmount , "id" : id, "usersInGroup" : usersInGroup}
     return render(request, 'bid.html', context)
 
 
