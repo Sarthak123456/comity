@@ -9,11 +9,11 @@
 <h1>View Profile</h1>
 
 {% if user_info %}
-{% for u in user_info %}
-<p> {{u.ifsc}} </p>
-<p> {{u.account_number}} </p>
-<p> {{u.u_id.username}} </p>
-{% endfor %}
+{% comment %} {% for u in user_info %} {% endcomment %}
+<p> {{user_info.ifsc}} </p>
+<p> {{user_info.account_number}} </p>
+<p> {{user_info.u_id.username}} </p>
+{% comment %} {% endfor %} {% endcomment %}
 
 {% else %}
 <p>No user data</p>

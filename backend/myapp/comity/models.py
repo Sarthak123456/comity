@@ -21,13 +21,15 @@ class group_info_table(models.Model):
     amount = models.CharField(max_length=6)
     created_at=models.IntegerField(default=0)
     updated_at=models.IntegerField(default=0)
+    # start_date=models.IntegerField(default=0)
+    # end_date=models.IntegerField(default=0)
     created_by_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         null=True,
      )
     def __str__(self):
-        return self.name
+        return str(self.id)
 
 
 class UserInfo(models.Model):
@@ -61,7 +63,7 @@ class group_table(models.Model):
     bidAmount = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.u_id.username
+        return str(self.u_id.username)
 
 
 # class UserInfo(models.Model):

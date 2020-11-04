@@ -4,6 +4,7 @@ from comity.models import group_info_table
 from comity.models import group_table
 from comity.models import UserInfo
 import pytz
+import uuid
 from time import time
 import datetime
 from  random import randint
@@ -23,20 +24,34 @@ def index(request):
         return redirect('/login')
     users = User.objects.all()
     user = request.user
-    groups = group_info_table.objects.filter(created_by_user = user)
-    otherGroups = group_table.objects.filter(u_id = user)
-    otherGroupss = []
-    grp = []
+    # groups = group_info_table.objects.filter(created_by_user = user)
+    grpNameByUser = group_table.objects.filter(u_id = user)
+    # grpInfo = group_info_table.objects.filter(name = grpNameByUser)
+    groupList = []
+    # grp = []
+    print("grpNameByUser = " , grpNameByUser)
     # //Find a better way later
-    for g in otherGroups:
-        com = group_info_table.objects.filter(name = g.g_id)
-        otherGroupss.append(com)
+    for grp in grpNameByUser:
+        print("grp = {}".format(grp.g_id))
+        grpInfo = group_info_table.objects.get(id = uuid.UUID(str(grp.g_id)))
+        groupList.append(grpInfo)
+    # print("groupList = ", groupList[0].name)
+        # otherGroupss.append(com)
+
+    # print("grpNameByUser = " , grpNameByUser)                                                       
     
-    for gr in otherGroupss:
-        for h in gr:
-            grp.append(h)
-            print("h = {}".format(h.id))
-    context={"users" : users ,"groups": groups , "otherGroups" : grp}
+    # for gr in otherGroupss:
+    #     print("gr = {}".format(gr))
+    #     for h in gr:
+    #         grp.append(h)
+    #         print("h = {}".format(gr))
+
+    if (grpNameByUser.count() > 0 ):
+        context={"users" : users , "groupList" : groupList}
+    else:
+        context = {"users" : users}
+    # if grpInfo:
+    #     print("grpInfo = " , grpInfo)
     return render(request, 'index.html', context)
 
     # data = {}
@@ -53,13 +68,16 @@ def addGroup(request):
     if request.method == "POST":
         name = request.POST.get('name')
         amt = request.POST.get('amt')
-        user = request.user
+        # user = request.user
+        user = User.objects.get(username = request.user)
         group = group_info_table(name = name , amount = amt, created_by_user = user, created_at= milliseconds, updated_at = milliseconds)
         group.save()
         # user = User.objects.get(id=ids)
-        g_id = group_info_table.objects.get(id = group.id)
+        # print("ID = " , group.id)
+        groupUuid = group_info_table.objects.get(id = group.id)
+        # print("G_ID = " , groupUuid)
         u_id = user
-        users = group_table(g_id = g_id , u_id = u_id)
+        users = group_table(g_id = groupUuid , u_id = u_id)
         users.save()
         messages.success(request, '"{}" saved!'.format(name))
         return redirect('/')
@@ -116,7 +134,7 @@ def logoutUser(request):
     logout(request)
     return redirect('/login')
 
-def get(request, id):
+def addUserToGroups(request, id):
     people = group_table.objects.filter(g_id = id)
     users = User.objects.exclude(username = request.user)
     group = group_info_table.objects.get(id = id)
@@ -133,12 +151,12 @@ def get(request, id):
     context = {"people" : people, "users" : users, "id" : id , "group" : group, "request" : request}
     return render(request, 'groups.html', context)
 
-def addUserToGroups(request):
-    if request.method == 'POST':
-        #gives list of id of inputs 
-        list_of_input_ids=request.POST.getlist('inputs')
-        id = request.get_full_path()
-        return HttpResponse(id)
+# def addUserToGroups(request):
+#     if request.method == 'POST':
+#         #gives list of id of inputs 
+#         list_of_input_ids=request.POST.getlist('inputs')
+#         id = request.get_full_path()
+#         return HttpResponse(id)
 
 
 def sendNotficationToStartComity(request, id):
@@ -146,15 +164,16 @@ def sendNotficationToStartComity(request, id):
     milliseconds = getCurrentMilis()
     print("milliseconds = " , milliseconds)
     group = group_info_table.objects.get(id = id)
-    group.updated_at = milliseconds
-    group.save()
-    currentDate = convertMilisToDatetime(group.updated_at)
-    dateAfterOneMonth = currentDate + relativedelta(days=+0)
+    if milliseconds:
+        group.updated_at = milliseconds
+        group.save()
+    currentDate = convertMilisToDatetime(group.created_at)
+    dateAfterOneMonth = currentDate + relativedelta(months=+1)
     print("dateAfterOneMonth = " , dateAfterOneMonth.date())
     print('getCurrentDateInLocalTimezone = ', getCurrentDateInLocalTimezone().date())
     winners = group_table.objects.filter(g_id = id , winner = True)
     if winners:
-        winner = group_table.objects.filter(g_id = id , winner = True).latest('winner')
+        winner = group_table.objects.filter(g_id = id , winner = True).last()
         print("winner = ", winner)
     print("winners = " , winners)
 
@@ -203,7 +222,46 @@ def sendNotficationToStartComity(request, id):
     else :
         messages.success(request, "Please transfer money to {}.".format(winner))
         messages.success(request, "{}  days remaining for the next cycle...".format((dateAfterOneMonth - currentDate).days))
+        return redirect('/get/{}/winner/{}'.format(id, winner))
+    return redirect('/')
+
+def startComity(request, id):
+    adm =''
+    milliseconds = getCurrentMilis()
+    if request.method == "POST":
+        group = group_info_table.objects.get(id = id)
+        group.updated_at = milliseconds
+        group.save()
+        user = User.objects.get(username=request.user)
+        admin = group_table.objects.get(g_id = group , u_id = user)
+        admin.start_comity = True
+        admin.save()
+        defaulters = group_table.objects.filter(g_id = group , start_comity = False)
+        if(defaulters):
+            for d in defaulters:
+                messages.success(request, 'defaulters = {}'.format(d))
+        else:
+            # messages.success(request, 'Choose user at random')
+            # notWinners = group_table.objects.filter(g_id = group , winner = False)
+            # messages.success(request, notWinners)
+            # messages.success(request, get_random(group))
+            # group.start_date = milliseconds
+            winner = get_random(group, request)
+            # messages.success(request, winner)
+            if winner:
+                userss = User.objects.get(username=winner)
+                # messages.success(request, userss)
+                admins = group_table.objects.get(g_id= group , u_id = userss)
+                # DON'T DELETE BELOW LINES, USED FOR selectedUser--
+                admins.winner = True
+                admins.save()
+                adm = admins
+                messages.success(request, "{} chosen at random".format(admins))
+    if adm != '':
+        return redirect('/get/{}/winner/{}'.format(id,adm))
+    else:
         return redirect('/get/{}'.format(id))
+    return redirect('/')
 
 
 def returnWinner(request, id, name):
@@ -229,11 +287,23 @@ def get_random(id, request):
 
 def bidMoney(request, id):
     bidAmount = 0
+    milliseconds = getCurrentMilis()
+    currentDate = convertMilisToDatetime(milliseconds)
+    dateAfterThreeDays= currentDate + relativedelta(days=+3)
     user = User.objects.get(username=request.user)
     userInGroup = group_table.objects.get(g_id = id, u_id = user)
     usersInGroup = group_table.objects.filter(g_id = id)
     currentGroup = group_info_table.objects.get(id = id)
+    higgestBidderUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
     totalAmount = int(len(usersInGroup)) * int(currentGroup.amount)
+    if (getCurrentDateInLocalTimezone().date() == dateAfterThreeDays.date()):
+        if higgestBidderUser:
+            messages.success(request, "{} higgestBidderUser with bid {}".format(higgestBidderUser, higgestBidderUser.bidAmount))
+            for u in usersInGroup:
+                u.bidAmount = 0
+                u.save()
+    else:
+        messages.success(request, "Bids open till {}. Please bid!".format(dateAfterThreeDays.date()))
     minBidAmount = totalAmount / 100
     if request.method == "POST":
         bidAmount = request.POST.get("bidAmt")
@@ -243,13 +313,12 @@ def bidMoney(request, id):
             messages.success(request, "BidAmt should be less than total amount")
         else:
             minBidAmountUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').first()
-            higgestBidderUser = minBidAmountUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
             if minBidAmountUser:
                 if int(bidAmount) <=  int(minBidAmountUser.bidAmount):
                     messages.success(request, "Bid more than {}".format(minBidAmountUser.bidAmount))
                     print("minBidAmount = " , minBidAmountUser.bidAmount)
                     print("bidAmount = " , bidAmount)
-                else:
+                else: 
                     userInGroup.bidAmount = int(bidAmount)
                     userInGroup.save()
             else:
@@ -260,7 +329,6 @@ def bidMoney(request, id):
                 messages.success(request, "{} returnToUser".format(returnToUser))
     # checkSuperuser = usersInGroup.objects.all()
     # messages.success(request, "{} usersInGroup".format(len(usersInGroup)))
-        messages.success(request, "{} higgestBidderUser with bid {}".format(higgestBidderUser, higgestBidderUser.bidAmount))
     context = {"name" : user, "userInGroup" : userInGroup, "totalAmt" : totalAmount , "id" : id, "usersInGroup" : usersInGroup}
     return render(request, 'bid.html', context)
 
@@ -288,8 +356,9 @@ def profile(request):
 
 def viewProfile(request):
     user = request.user
-    user_info = UserInfo.objects.filter(u_id = user)
-    context = {"userInfo" : user_info}
+    user_info = UserInfo.objects.get(u_id = user)
+    print(user, user_info.ifsc)
+    context = {"user_info" : user_info}
     return render(request, "viewProfile.html" , context)
 
 
@@ -307,38 +376,3 @@ def getCurrentMilis():
 def getCurrentDateInLocalTimezone():
     return datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
 
-def startComity(request, id):
-    adm =''
-    milliseconds = getCurrentMilis()
-    if request.method == "POST":
-        group = group_info_table.objects.get(id = id)
-        group.updated_at = milliseconds
-        group.save()
-        user = User.objects.get(username=request.user)
-        admin = group_table.objects.get(g_id = group , u_id = user)
-        admin.start_comity = True
-        admin.save()
-        defaulters = group_table.objects.filter(g_id = group , start_comity = False)
-        if(defaulters):
-            for d in defaulters:
-                messages.success(request, 'defaulters = {}'.format(d))
-        else:
-            # messages.success(request, 'Choose user at random')
-            # notWinners = group_table.objects.filter(g_id = group , winner = False)
-            # messages.success(request, notWinners)
-            # messages.success(request, get_random(group))
-            winner = get_random(group, request)
-            # messages.success(request, winner)
-            if winner:
-                userss = User.objects.get(username=winner)
-                # messages.success(request, userss)
-                admins = group_table.objects.get(g_id= group , u_id = userss)
-                # DON'T DELETE BELOW LINES, USED FOR selectedUser--
-                # admins.winner = True
-                # admins.save()
-                adm = admins
-                messages.success(request, "{} chosen at random".format(admins))
-    if adm != '':
-        return redirect('/get/{}/winner/{}'.format(id,adm))
-    else:
-        return redirect('/get/{}'.format(id))

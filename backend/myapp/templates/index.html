@@ -28,9 +28,10 @@
 <a href="/get/{{group.id}}"> {{group.name}}, {{group.amount}}</a> <br>
 {% endfor %} -->
 
-{% for group in otherGroups %}
-<a href="/get/{{group.id}}"> {{group.name}}, {{group.amount}}, {{group.created_at}} , {{group.updated_at}}</a> <br>
+{% for group in groupList %}
+<a href="/get/{{group.id}}"> {{group.name}}, {{group.amount}} </a> <br>
 {% endfor %}
+
 
 
 

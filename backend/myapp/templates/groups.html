@@ -4,7 +4,7 @@
 
 {% block body %}
 
-<b><p>This is my "{{group}}"  page</p></b>
+<b><p>This is my "<i>{{group.name}}</i>" page created by <i>{{group.created_by_user}}</i> for <i>{{group.amount}}</i> </p></b>
 
 {% for pupil in people %}
 {{ pupil }}<br>
@@ -30,33 +30,6 @@
 {% csrf_token %}
 <button type = "submit" >Start Commitie</button> 
 </form>
-
-<!-- Button trigger modal -->
-<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-  Launch demo modal
-</button> -->
-
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        User selected at random
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Bid</button>
-        <button type="button" class="btn btn-primary">Transfer</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 {% endblock body %}
 

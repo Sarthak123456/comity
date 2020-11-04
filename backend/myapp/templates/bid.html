@@ -14,13 +14,13 @@
 
 {% for u in usersInGroup %}
 {% if u.bidAmount > 0%}
-<p> {{u.u_id.username}} bid {{u.bidAmount}}</p>
+<p> {{u.u_id.username}} bid ₹{{u.bidAmount}}</p>
 
 {% endif %}
 
 {% endfor %} 
 
-<p> You chose to bid ₹{{userInGroup.bidAmount}} this month </p>
+{% comment %} <p> You chose to bid ₹{{userInGroup.bidAmount}} this month </p> {% endcomment %}
 <a href='/get/{{id}}/transfer/{{name}}' target='_blank'>Transfer</a>
 
 {% else %}
@@ -35,7 +35,7 @@
 
 {% endif %}
 
-<p>{{name}}</p> can bid
+{% comment %} <p>{{name}}</p> can bid {% endcomment %}
 <p> Total AMT = {{ totalAmt }}</p>
 {% endif %}
 
