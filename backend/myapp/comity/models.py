@@ -21,8 +21,8 @@ class group_info_table(models.Model):
     amount = models.CharField(max_length=6)
     created_at=models.IntegerField(default=0)
     updated_at=models.IntegerField(default=0)
-    # start_date=models.IntegerField(default=0)
-    # end_date=models.IntegerField(default=0)
+    start_date=models.IntegerField(default=0)
+    end_date=models.IntegerField(default=0)
     created_by_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

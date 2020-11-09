@@ -10,20 +10,6 @@
 
 {% if userInGroup.superuser == True %}
 
-{% if userInGroup.bidAmount > 0 %}
-
-{% for u in usersInGroup %}
-{% if u.bidAmount > 0%}
-<p> {{u.u_id.username}} bid ₹{{u.bidAmount}}</p>
-
-{% endif %}
-
-{% endfor %} 
-
-{% comment %} <p> You chose to bid ₹{{userInGroup.bidAmount}} this month </p> {% endcomment %}
-<a href='/get/{{id}}/transfer/{{name}}' target='_blank'>Transfer</a>
-
-{% else %}
 <form action = "/get/{{id}}/bid" method = "POST">
 {% csrf_token %} 
   <div class="form-group">
@@ -32,6 +18,19 @@
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+{% if userInGroup.bidAmount > 0 %}
+
+{% for u in usersInGroup %}
+{% if u.bidAmount > 0 %}
+<p> {{u.u_id.username}} bid ₹{{u.bidAmount}}</p>
+
+{% endif %}
+
+{% endfor %} 
+
+{% comment %} <p> You chose to bid ₹{{userInGroup.bidAmount}} this month </p> {% endcomment %}
+<a href='/get/{{id}}/transfer/{{name}}' target='_blank'>Transfer</a>
 
 {% endif %}
 

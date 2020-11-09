@@ -160,28 +160,27 @@ def addUserToGroups(request, id):
 
 
 def sendNotficationToStartComity(request, id):
-    # milliseconds =  datetime.now(timezone.utc)
-    milliseconds = getCurrentMilis()
-    print("milliseconds = " , milliseconds)
+    milliseconds =  getCurrentMilis()
     group = group_info_table.objects.get(id = id)
     if milliseconds:
         group.updated_at = milliseconds
         group.save()
-    currentDate = convertMilisToDatetime(group.created_at)
+    currentDate = getCurrentDateInLocalTimezone()
     dateAfterOneMonth = currentDate + relativedelta(months=+1)
     print("dateAfterOneMonth = " , dateAfterOneMonth.date())
     print('getCurrentDateInLocalTimezone = ', getCurrentDateInLocalTimezone().date())
-    winners = group_table.objects.filter(g_id = id , winner = True)
+    winners = ''
+    higgestBidderUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
+    print("higgestBidderUser = " , higgestBidderUser)
+    if(higgestBidderUser):
+        winners  = higgestBidderUser
+        messages.success(request, "{} higgestBidderUser".format(higgestBidderUser))
+    else:
+        # winner = get_random(group, request)
+        winners = group_table.objects.filter(g_id = id , winner = True)
     if winners:
         winner = group_table.objects.filter(g_id = id , winner = True).last()
         print("winner = ", winner)
-    print("winners = " , winners)
-
-    # 
-    # s = milliseconds / 1000
-    # 
-    # int(time() * 1000)
-    # print("date = " , three_mon_rel)
     if not winners:
         messages.success(request, 'no winners')
         return startComity(request, id)
@@ -221,13 +220,15 @@ def sendNotficationToStartComity(request, id):
         #     return redirect('/get/{}'.format(id))
     else :
         messages.success(request, "Please transfer money to {}.".format(winner))
-        messages.success(request, "{}  days remaining for the next cycle...".format((dateAfterOneMonth - currentDate).days))
+        if group.end_date > 0:
+            messages.success(request, "{}  days remaining for the next cycle...".format(str(convertMilisToDatetime(group.end_date) - currentDate).split('.')[0]))
         return redirect('/get/{}/winner/{}'.format(id, winner))
     return redirect('/')
 
 def startComity(request, id):
     adm =''
     milliseconds = getCurrentMilis()
+    print("getDateAfterSometime = " , getDateAfterSometime("months" , 1))
     if request.method == "POST":
         group = group_info_table.objects.get(id = id)
         group.updated_at = milliseconds
@@ -246,17 +247,44 @@ def startComity(request, id):
             # messages.success(request, notWinners)
             # messages.success(request, get_random(group))
             # group.start_date = milliseconds
-            winner = get_random(group, request)
+            higgestBidderUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
+            # print("higgestBidderUser = " , higgestBidderUser)
+            if(higgestBidderUser):
+                winner  = higgestBidderUser
+                # messages.success(request, "{} higgestBidderUser".format(higgestBidderUser))
+            else:
+                winner = get_random(group, request)
+                messages.success(request, "{} chosen at random".format(admin))
             # messages.success(request, winner)
             if winner:
                 userss = User.objects.get(username=winner)
                 # messages.success(request, userss)
                 admins = group_table.objects.get(g_id= group , u_id = userss)
                 # DON'T DELETE BELOW LINES, USED FOR selectedUser--
+                # dateAfterOneMonth = getDateAfterSometime("months", 1)
+                # group.start_date = milliseconds
+                # dateAfterOneMonth= currentDate + relativedelta(months=+1) - relativedelta(days=-1)
+                # dt = datetime.datetime(dateAfterOneMonth.year(), dateAfterOneMonth.day(), dateAfterOneMonth.date())
+                # print("dateAfterOneMonth milis = ", unix_time_millis(dt))  
+                group.updated_at = milliseconds
+                if group.start_date == 0 or getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(group.end_date).date():
+                    group.start_date = milliseconds
+                    dateAfterOneMonth= convertMilisToDatetime(getCurrentMilis()) + relativedelta(months=+1)
+                    print("dateAfterOneMonth TRUE = " , dateAfterOneMonth)
+                    print("dateAfterOneMonth TRUE yr= " ,dateAfterOneMonth.year)
+                    print("dateAfterOneMonth TRUE mnth= " , dateAfterOneMonth.month)
+                    print("dateAfterOneMonth TRUE dt= " , dateAfterOneMonth.day)
+                    yr =  dateAfterOneMonth.year
+                    mn = dateAfterOneMonth.month
+                    dy = dateAfterOneMonth.day
+                    dt = datetime.datetime(yr, mn, dy)
+                    print("dateAfterOneMonth milis =", unix_time_millis(dt))  
+                    group.end_date = unix_time_millis(dt)
+                    group.save()
                 admins.winner = True
                 admins.save()
                 adm = admins
-                messages.success(request, "{} chosen at random".format(admins))
+                
     if adm != '':
         return redirect('/get/{}/winner/{}'.format(id,adm))
     else:
@@ -287,23 +315,27 @@ def get_random(id, request):
 
 def bidMoney(request, id):
     bidAmount = 0
-    milliseconds = getCurrentMilis()
-    currentDate = convertMilisToDatetime(milliseconds)
-    dateAfterThreeDays= currentDate + relativedelta(days=+3)
     user = User.objects.get(username=request.user)
     userInGroup = group_table.objects.get(g_id = id, u_id = user)
     usersInGroup = group_table.objects.filter(g_id = id)
     currentGroup = group_info_table.objects.get(id = id)
     higgestBidderUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
+    dateAfterThreeDays= convertMilisToDatetime(currentGroup.start_date) + relativedelta(days=+3)
     totalAmount = int(len(usersInGroup)) * int(currentGroup.amount)
     if (getCurrentDateInLocalTimezone().date() == dateAfterThreeDays.date()):
         if higgestBidderUser:
+            winners = group_table.objects.filter(g_id = id , winner = True).first()
+            winners.winner = False
+            winners.save()
+            higgestBidderUser.winner = True
+            higgestBidderUser.save()
             messages.success(request, "{} higgestBidderUser with bid {}".format(higgestBidderUser, higgestBidderUser.bidAmount))
+        if (CurrentDateInLocalTimezone().date() == convertMilisToDatetime(currentGroup.end_date)):
             for u in usersInGroup:
                 u.bidAmount = 0
                 u.save()
     else:
-        messages.success(request, "Bids open till {}. Please bid!".format(dateAfterThreeDays.date()))
+        messages.success(request, "Bids open till {} for {}. Please bid!".format(dateAfterThreeDays.date() , str(dateAfterThreeDays - getCurrentDateInLocalTimezone()).split('.')[0]))
     minBidAmount = totalAmount / 100
     if request.method == "POST":
         bidAmount = request.POST.get("bidAmt")
@@ -312,14 +344,19 @@ def bidMoney(request, id):
         elif (int(bidAmount) > totalAmount):
             messages.success(request, "BidAmt should be less than total amount")
         else:
-            minBidAmountUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').first()
+            minBidAmountUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
             if minBidAmountUser:
                 if int(bidAmount) <=  int(minBidAmountUser.bidAmount):
                     messages.success(request, "Bid more than {}".format(minBidAmountUser.bidAmount))
+                    print("minBidAmount = " , minBidAmountUser)
                     print("minBidAmount = " , minBidAmountUser.bidAmount)
                     print("bidAmount = " , bidAmount)
                 else: 
                     userInGroup.bidAmount = int(bidAmount)
+                    winners = group_table.objects.filter(g_id = id , winner = True).first()
+                    winners.winner = False
+                    winners.save()
+                    userInGroup.winner = True
                     userInGroup.save()
             else:
                 userInGroup.bidAmount = int(bidAmount)
@@ -357,7 +394,7 @@ def profile(request):
 def viewProfile(request):
     user = request.user
     user_info = UserInfo.objects.get(u_id = user)
-    print(user, user_info.ifsc)
+    # print(user, user_info.ifsc)
     context = {"user_info" : user_info}
     return render(request, "viewProfile.html" , context)
 
@@ -375,4 +412,19 @@ def getCurrentMilis():
 
 def getCurrentDateInLocalTimezone():
     return datetime.datetime.now(pytz.timezone('Asia/Kolkata'))
+
+def getDateAfterSometime(durationType: str, duration: int):
+    milliseconds = getCurrentMilis()
+    currentDate = convertMilisToDatetime(milliseconds)
+    dy = durationType
+    tm = duration
+    print(dy , tm , exec('dy=+tm'))
+    print("getDateAfterSometime= ", (currentDate + relativedelta(exec('dy=+tm'))))
+    return (currentDate + relativedelta(exec('durationType=+duration')))
+
+
+
+def unix_time_millis(dt):
+    epoch = datetime.datetime.utcfromtimestamp(0)
+    return (dt - epoch).total_seconds() * 1000.0
 
