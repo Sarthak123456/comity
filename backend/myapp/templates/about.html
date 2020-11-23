@@ -5,7 +5,14 @@
 {% block body %}
 
 <b><p>{{winner}} chosen at random</p></b>
-<a href='/get/{{id}}/bid'>bid</a> <br> <a href='/get/{{id}}/transfer/{{winner}}'> transfer </a>
+
+
+{% if finish != False %}
+<a href='/get/{{id}}/bid'>bid</a> 
+<br> 
+{% endif %}
+
+<a href='/get/{{id}}/transfer/{{winner}}'> transfer </a>
 
 
 

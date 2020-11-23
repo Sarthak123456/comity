@@ -9,30 +9,39 @@
 
 
 {% if userInGroup.superuser == True %}
+{% if showBidInputBox %}
 
+{% if lastWinner != name or highestBidUser != name %}
 <form action = "/get/{{id}}/bid" method = "POST">
 {% csrf_token %} 
+{% comment %} {% if userInGroup != latestWinner or latestWinner.bidAmount > 0 %} {% endcomment %}
   <div class="form-group">
     <label for="bidAmt">Bid Amount</label>
     <input type="number" class="form-control" id="bidAmt" name = "bidAmt" placeholder="Bid Amount" required>
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+{% comment %} {% endif %} {% endcomment %}
 
-{% if userInGroup.bidAmount > 0 %}
+{% endif %}
+{% endif %}
+{% comment %} {% if userInGroup.bidAmount > 0 %} {% endcomment %}
 
 {% for u in usersInGroup %}
+
 {% if u.bidAmount > 0 %}
+{% if u.u_id.username != lastWinner %}
 <p> {{u.u_id.username}} bid ₹{{u.bidAmount}}</p>
 
+{% endif %}
 {% endif %}
 
 {% endfor %} 
 
 {% comment %} <p> You chose to bid ₹{{userInGroup.bidAmount}} this month </p> {% endcomment %}
-<a href='/get/{{id}}/transfer/{{name}}' target='_blank'>Transfer</a>
+{% comment %} <a href='/get/{{id}}/transfer/{{name}}' target='_blank'>Transfer</a> {% endcomment %}
 
-{% endif %}
+{% comment %} {% endif %} {% endcomment %}
 
 {% comment %} <p>{{name}}</p> can bid {% endcomment %}
 <p> Total AMT = {{ totalAmt }}</p>

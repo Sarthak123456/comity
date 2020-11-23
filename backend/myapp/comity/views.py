@@ -5,6 +5,7 @@ from comity.models import group_table
 from comity.models import UserInfo
 import pytz
 import uuid
+from django.db.models import Q
 from time import time
 import datetime
 from  random import randint
@@ -98,7 +99,7 @@ def services(request):
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         desc = request.POST.get('desc')
-        services = Services(name = name , email = email, phone = phone, desc = desc , date = datetime.today())
+        services = Services(name = name , email = email, phone = phone, desc = desc , date = datetime.datetime.now())
         services.save()
         messages.success(request, 'Services request saved!')
         return redirect('/')
@@ -161,71 +162,122 @@ def addUserToGroups(request, id):
 
 def sendNotficationToStartComity(request, id):
     milliseconds =  getCurrentMilis()
-    group = group_info_table.objects.get(id = id)
+    currentGroup = group_info_table.objects.get(id = id)
+    showBidInputBox = True
+    finish = False
     if milliseconds:
-        group.updated_at = milliseconds
-        group.save()
+        currentGroup.updated_at = milliseconds
+        currentGroup.save()
     currentDate = getCurrentDateInLocalTimezone()
     dateAfterOneMonth = currentDate + relativedelta(months=+1)
-    print("dateAfterOneMonth = " , dateAfterOneMonth.date())
-    print('getCurrentDateInLocalTimezone = ', getCurrentDateInLocalTimezone().date())
+    # print("dateAfterOneMonth = " , dateAfterOneMonth.date())
+    # print('getCurrentDateInLocalTimezone = ', getCurrentDateInLocalTimezone().date())
     winners = ''
-    higgestBidderUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
-    print("higgestBidderUser = " , higgestBidderUser)
-    if(higgestBidderUser):
-        winners  = higgestBidderUser
-        messages.success(request, "{} higgestBidderUser".format(higgestBidderUser))
+    allWinners = group_table.objects.filter(g_id = id , winner = True,bidAmount__gt=0)
+    lastWinner = group_table.objects.filter(g_id = id , winner = True,bidAmount__gt=0).last()
+    if len(allWinners) > 1:
+
+        lastWinnerQuery = group_table.objects.filter(g_id = id , winner = True).order_by('winner')[:len(allWinners)]
+        lastWinner  = lastWinnerQuery[len(allWinners) - 1].u_id
+        print("lastWinner indfs= " , lastWinner)
+
+    else:
+        # pass
+        lastWinner = group_table.objects.filter(g_id = id , winner = True).last()
+
+        print("lastWinner indfslkl= " , lastWinner)
+
+    lastWinnersBidAmount = []
+    if(len(allWinners) > 1 and type(lastWinner) == list):
+        for l in lastWinner:
+            print("l.bidmt = " , l)
+            lastWinnersBidAmount.append(l.bidAmount)
+        print("group_table.objects.filter(~Q(bidAmount__in=lastWinnersBidAmount)) = ", group_table.objects.exclude(bidAmount__in=lastWinnersBidAmount))
+        highestBidUser = group_table.objects.exclude(g_id = id, bidAmount__in=lastWinnersBidAmount).filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+
+
+        print("highestBidUser = ", highestBidUser)
+
+    else:
+        highestBidUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+        print("highestBidUser else= ", highestBidUser)
+
+
+    print("highestBidUser 2= " , highestBidUser)
+    if(highestBidUser):
+        winners  = highestBidUser
+        messages.success(request, "{} highestBidUser".format(highestBidUser))
     else:
         # winner = get_random(group, request)
-        winners = group_table.objects.filter(g_id = id , winner = True)
-    if winners:
-        winner = group_table.objects.filter(g_id = id , winner = True).last()
-        print("winner = ", winner)
+        winners = allWinners
+
+    if highestBidUser:
+        winner = highestBidUser
+    else:
+        if lastWinner and int(lastWinner.bidAmount) > 0:
+            print("lastWinner elif = ", lastWinner)
+            winner = group_table.objects.exclude(bidAmount=lastWinner.bidAmount).filter(g_id = id , winner = True).last()
+            # winner = ''
+
+
+        # highestBidUser = group_table.objects.exclude(bidAmount=lastWinner.bidAmount).filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+        # abc = group_table.objects.filter(bidAmount=lastWinner.bidAmount)
+        # print("abc = " , abc, highestBidUser)
+        else:
+            winner = group_table.objects.filter(g_id = id , winner = True).last()
+
+        # highestBidUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+        # print("highestBidUser = ", highestBidUser)
+
+        # winner = group_table.objects.exclude(bidAmount=lastWinner.bidAmount).filter(g_id = id , winner = True).last()
+            print("winner = ", winner)
     if not winners:
         messages.success(request, 'no winners')
-        return startComity(request, id)
-    elif (getCurrentDateInLocalTimezone().date() == dateAfterOneMonth.date()):
-        return startComity(request, id)
-        # if request.method == "POST":
-        #     group.updated_at = milliseconds
-        #     group.save()
-        #     user = User.objects.get(username=request.user)
-        #     admin = group_table.objects.get(g_id = group , u_id = user)
-        #     admin.start_comity = True
-        #     admin.save()
-        #     adm =''
-        #     defaulters = group_table.objects.filter(g_id = group , start_comity = False)
-        #     if(defaulters):
-        #         for d in defaulters:
-        #             messages.success(request, 'defaulters = {}'.format(d))
-        #     else:
-        #         # messages.success(request, 'Choose user at random')
-        #         # notWinners = group_table.objects.filter(g_id = group , winner = False)
-        #         # messages.success(request, notWinners)
-        #         # messages.success(request, get_random(group))
-        #         winner = get_random(group, request)
-        #         # messages.success(request, winner)
-        #         if winner:
-        #             userss = User.objects.get(username=winner)
-        #             # messages.success(request, userss)
-        #             admins = group_table.objects.get(g_id= group , u_id = userss)
-        #             # DON'T DELETE BELOW LINES, USED FOR selectedUser--
-        #             admins.winner = True
-        #             admins.save()
-        #             adm = admins
-        #             messages.success(request, "{} chosen at random".format(admins))
-        # if adm != '':
-        #     return redirect('/get/{}/winner/{}'.format(id,adm))
-        # else:
-        #     return redirect('/get/{}'.format(id))
+        return startComity(request, id, highestBidUser, finish)
+        
+# TODO : Check for better check since for the whole day "Start comity" will increment members.toUpperCase()
+    elif (getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(currentGroup.end_date).date()):
+    # elif(getCurrentDateInLocalTimezone().date() == getCurrentDateInLocalTimezone().date()):
+        # lastWinner = group_table.objects.filter(g_id = id , winner = True).last()
+        # print("lastWinner = " , lastWinner)
+        usersInGroup = group_table.objects.filter(g_id = id)    
+        print("usersInGroup = " ,  usersInGroup)
+        print("lastWinner = " ,  lastWinner)
+        showBidInputBox =True
+        if len(usersInGroup)>0 and type(lastWinner) == 'list':
+            for u in usersInGroup:
+                for l in lastWinner:
+                    if (u.u_id != l.u_id):
+                        print('u.uid =' , u.u_id)
+                        print('lw uid =' ,l.u_id)
+                        u.bidAmount = 0
+                        u.save()
+
+        else:
+            if len(usersInGroup)>0 and lastWinner:
+                for u in usersInGroup:
+                    # for l in lastWinner:
+                    if (u != lastWinner):
+                        print('u.uid =' , u)
+                        print('lw uid =' ,lastWinner)
+                        u.bidAmount = 0
+                        u.save()
+
+        # if lastWinner:
+        #     abc = group_table.objects.filter(bidAmount=lastWinner.bidAmount)
+        #     print("abc = " , abc, highestBidUser)
+        return startComity(request, id, None, finish)
+        
     else :
         messages.success(request, "Please transfer money to {}.".format(winner))
-        if group.end_date > 0:
-            messages.success(request, "{}  days remaining for the next cycle...".format(str(convertMilisToDatetime(group.end_date) - currentDate).split('.')[0]))
-        return redirect('/get/{}/winner/{}'.format(id, winner))
+        print("finish = ", finish)
+
+        if currentGroup.end_date > 0:
+            messages.success(request, "{}  days remaining for the next cycle...".format(str(convertMilisToDatetime(currentGroup.end_date) - currentDate).split('.')[0]))
+        return redirect('/get/{}/winner/{}/{}'.format(id, winner, finish))
     return redirect('/')
 
-def startComity(request, id):
+def startComity(request, id, highestBidUser, finish):
     adm =''
     milliseconds = getCurrentMilis()
     print("getDateAfterSometime = " , getDateAfterSometime("months" , 1))
@@ -242,65 +294,55 @@ def startComity(request, id):
             for d in defaulters:
                 messages.success(request, 'defaulters = {}'.format(d))
         else:
-            # messages.success(request, 'Choose user at random')
-            # notWinners = group_table.objects.filter(g_id = group , winner = False)
-            # messages.success(request, notWinners)
-            # messages.success(request, get_random(group))
-            # group.start_date = milliseconds
-            higgestBidderUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
-            # print("higgestBidderUser = " , higgestBidderUser)
-            if(higgestBidderUser):
-                winner  = higgestBidderUser
-                # messages.success(request, "{} higgestBidderUser".format(higgestBidderUser))
+            # if(lastWinner):
+            #     return get_random(group, request)
+
+
+            if(highestBidUser):
+                winner = highestBidUser
+                # messages.success(request, "{} highestBidUser".format(highestBidUser))
             else:
                 winner = get_random(group, request)
-                messages.success(request, "{} chosen at random".format(admin))
-            # messages.success(request, winner)
+                messages.success(request, "{} chosen at random".format(winner))
+                # messages.success(request, winner)
             if winner:
                 userss = User.objects.get(username=winner)
                 # messages.success(request, userss)
                 admins = group_table.objects.get(g_id= group , u_id = userss)
-                # DON'T DELETE BELOW LINES, USED FOR selectedUser--
-                # dateAfterOneMonth = getDateAfterSometime("months", 1)
-                # group.start_date = milliseconds
-                # dateAfterOneMonth= currentDate + relativedelta(months=+1) - relativedelta(days=-1)
-                # dt = datetime.datetime(dateAfterOneMonth.year(), dateAfterOneMonth.day(), dateAfterOneMonth.date())
-                # print("dateAfterOneMonth milis = ", unix_time_millis(dt))  
-                group.updated_at = milliseconds
+
                 if group.start_date == 0 or getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(group.end_date).date():
-                    group.start_date = milliseconds
                     dateAfterOneMonth= convertMilisToDatetime(getCurrentMilis()) + relativedelta(months=+1)
-                    print("dateAfterOneMonth TRUE = " , dateAfterOneMonth)
-                    print("dateAfterOneMonth TRUE yr= " ,dateAfterOneMonth.year)
-                    print("dateAfterOneMonth TRUE mnth= " , dateAfterOneMonth.month)
-                    print("dateAfterOneMonth TRUE dt= " , dateAfterOneMonth.day)
                     yr =  dateAfterOneMonth.year
                     mn = dateAfterOneMonth.month
                     dy = dateAfterOneMonth.day
                     dt = datetime.datetime(yr, mn, dy)
                     print("dateAfterOneMonth milis =", unix_time_millis(dt))  
                     group.end_date = unix_time_millis(dt)
+                    group.start_date = milliseconds
                     group.save()
+                # if  not finish:
                 admins.winner = True
                 admins.save()
                 adm = admins
                 
     if adm != '':
-        return redirect('/get/{}/winner/{}'.format(id,adm))
+        return redirect('/get/{}/winner/{}/{}'.format(id,adm, finish))
     else:
         return redirect('/get/{}'.format(id))
     return redirect('/')
 
 
-def returnWinner(request, id, name):
-    context = {"id" : id ,"winner": name}
+def returnWinner(request, id, name, finish):
+    context = {"id" : id ,"winner": name , "finish" : finish}
     return render(request, 'about.html', context)
 
 
 def get_random(id, request):
     usersInGroup = []
     # users = group_table.objects.filter(g_id = id, winner = false)
+    allWinners = group_table.objects.filter(g_id = id , winner = True, bidAmount__gt=0)
     notWinners = group_table.objects.filter(g_id = id , winner = False)
+    # if notWinners and (len(allWinners) != (len(group_table.objects.filter(g_id = id)) -1)):
     if notWinners:
         for u in notWinners:
             usersInGroup.append(u)
@@ -309,7 +351,7 @@ def get_random(id, request):
         i = randint(0, (count - 1))
         return usersInGroup[i]
     else:
-        messages.success(request , "Commitee finished")
+        return messages.success(request , "Commitee finished")
 
 
 
@@ -317,25 +359,84 @@ def bidMoney(request, id):
     bidAmount = 0
     user = User.objects.get(username=request.user)
     userInGroup = group_table.objects.get(g_id = id, u_id = user)
+    nonWinnerUsersInGroup = group_table.objects.filter(g_id = id, bidAmount=0)
     usersInGroup = group_table.objects.filter(g_id = id)
+    # print("nonWinnerUsersInGroup" , nonWinnerUsersInGroup)
+    # print("usersInGroup" , usersInGroup)
     currentGroup = group_info_table.objects.get(id = id)
-    higgestBidderUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
     dateAfterThreeDays= convertMilisToDatetime(currentGroup.start_date) + relativedelta(days=+3)
-    totalAmount = int(len(usersInGroup)) * int(currentGroup.amount)
-    if (getCurrentDateInLocalTimezone().date() == dateAfterThreeDays.date()):
-        if higgestBidderUser:
-            winners = group_table.objects.filter(g_id = id , winner = True).first()
-            winners.winner = False
-            winners.save()
-            higgestBidderUser.winner = True
-            higgestBidderUser.save()
-            messages.success(request, "{} higgestBidderUser with bid {}".format(higgestBidderUser, higgestBidderUser.bidAmount))
-        if (CurrentDateInLocalTimezone().date() == convertMilisToDatetime(currentGroup.end_date)):
-            for u in usersInGroup:
-                u.bidAmount = 0
-                u.save()
+
+    lastWinner = ''
+    lastWinner = group_table.objects.filter(g_id = id , winner = True, bidAmount__gt=0).last()
+    allWinners = group_table.objects.filter(g_id = id , winner = True, bidAmount__gt=0)
+
+    # if (lastWinner and int(lastWinner.bidAmount) > 0):
+    print("lastWinner bidMoney" , lastWinner)
+    # print("user bidMoney" , user)
+    # print("user bidMoney" , str(lastWinner) == str(user))
+
+    #     highestBidUser = group_table.objects.exclude(bidAmount=lastWinner.bidAmount).filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+    # else:
+
+    # if (getCurrentDateInLocalTimezone().date() == dateAfterThreeDays.date()): 
+
+
+
+    # if (len(allWinners) > 1):
+    #     highestBidUser = group_table.objects.exclude(bidAmount=lastWinner.bidAmount).filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+    #     print("highestBidUser init if " , highestBidUser)
+    # else:
+    #     highestBidUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+    #     print("highestBidUser init" , highestBidUser)
+
+    lastWinnersBidAmount = []
+    if(len(allWinners) > 1 and type(lastWinner) == list):
+        for l in lastWinner:
+            print("l.bidmt = " , l)
+            lastWinnersBidAmount.append(l.bidAmount)
+        print("group_table.objects.filter(~Q(bidAmount__in=lastWinnersBidAmount)) = ", group_table.objects.exclude(bidAmount__in=lastWinnersBidAmount))
+        highestBidUser = group_table.objects.exclude(g_id = id, bidAmount__in=lastWinnersBidAmount).filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+
+
+        print("highestBidUser = ", highestBidUser)
+
     else:
+        highestBidUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+        print("highestBidUser else= ", highestBidUser)
+
+
+    print("highestBidUser 2= " , highestBidUser)
+
+    # highestBidUser = group_table.objects.exclude(bidAmount=lastWinner.bidAmount).filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+
+
+    showBidInputBox = True
+    totalAmount = int(len(usersInGroup)) * int(currentGroup.amount)
+    if (getCurrentDateInLocalTimezone().date() == dateAfterThreeDays.date()): 
+    # if(getCurrentDateInLocalTimezone().date() == getCurrentDateInLocalTimezone().date()):
+        showBidInputBox = False
+        if highestBidUser:
+            winners = group_table.objects.filter(g_id = id , winner = True).first()
+            if winners:
+                winners.winner = False
+                winners.save()
+            highestBidUser.winner = True
+            highestBidUser.save()
+            # lastWinner = group_table.objects.filter(g_id = id , winner = True).first()
+            messages.success(request, "{} highestBidUser with bid {}".format(highestBidUser, highestBidUser.bidAmount))
+    else:
+        # lastWinner = group_table.objects.filter(g_id = id , winner = True).last()
+        if highestBidUser and lastWinner:
+            messages.success(request, "{} highestBidUser3 with bid {}".format(highestBidUser, highestBidUser.bidAmount))
+            # messages.success(request, "{} highestBidUser3 with bid {}".format(lastWinner, lastWinner.bidAmount))
         messages.success(request, "Bids open till {} for {}. Please bid!".format(dateAfterThreeDays.date() , str(dateAfterThreeDays - getCurrentDateInLocalTimezone()).split('.')[0]))
+        checkBidForm(request, totalAmount, lastWinner , id , userInGroup, nonWinnerUsersInGroup)
+    # checkSuperuser = usersInGroup.objects.all()
+    # messages.success(request, "{} usersInGroup".format(len(usersInGroup)))
+    context = {"name" : str(user), "userInGroup" : userInGroup,"lastWinner" : str(lastWinner), "highestBidUser" : str(highestBidUser), "usersInGroup" : usersInGroup, "showBidInputBox": showBidInputBox, "totalAmt" : totalAmount , "id" : id}
+    return render(request, 'bid.html', context)
+
+def checkBidForm(request, totalAmount, lastWinner, id , userInGroup, nonWinnerUsersInGroup):
     minBidAmount = totalAmount / 100
     if request.method == "POST":
         bidAmount = request.POST.get("bidAmt")
@@ -344,7 +445,17 @@ def bidMoney(request, id):
         elif (int(bidAmount) > totalAmount):
             messages.success(request, "BidAmt should be less than total amount")
         else:
-            minBidAmountUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
+            if (lastWinner and int(lastWinner.bidAmount) > 0):
+                print("lastWinner checkBidForm if " , lastWinner)
+                minBidAmountUser = group_table.objects.exclude(g_id = id, bidAmount=lastWinner.bidAmount).filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
+
+                # highestBidUser = group_table.objects.exclude(bidAmount=lastWinner.bidAmount).filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+            else:
+                print("lastWinner checkBidForm else " , lastWinner)
+                minBidAmountUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0 ).order_by('bidAmount').last()
+
+                # highestBidUser = group_table.objects.filter(g_id = id, bidAmount__gt = 0).order_by('bidAmount').last()
+
             if minBidAmountUser:
                 if int(bidAmount) <=  int(minBidAmountUser.bidAmount):
                     messages.success(request, "Bid more than {}".format(minBidAmountUser.bidAmount))
@@ -353,22 +464,25 @@ def bidMoney(request, id):
                     print("bidAmount = " , bidAmount)
                 else: 
                     userInGroup.bidAmount = int(bidAmount)
-                    winners = group_table.objects.filter(g_id = id , winner = True).first()
-                    winners.winner = False
-                    winners.save()
-                    userInGroup.winner = True
+
+
+
+
+
+
+
+
+                    # winners = group_table.objects.filter(g_id = id , winner = True).first()
+                    # winners.winner = False
+                    # winners.save()
+                    # userInGroup.winner = True
                     userInGroup.save()
             else:
                 userInGroup.bidAmount = int(bidAmount)
                 userInGroup.save()
                 messages.success(request, "{} bidAmt".format(bidAmount))
-                returnToUser = int(bidAmount) / int(len(usersInGroup))
+                returnToUser = int(bidAmount) / int(len(nonWinnerUsersInGroup))
                 messages.success(request, "{} returnToUser".format(returnToUser))
-    # checkSuperuser = usersInGroup.objects.all()
-    # messages.success(request, "{} usersInGroup".format(len(usersInGroup)))
-    context = {"name" : user, "userInGroup" : userInGroup, "totalAmt" : totalAmount , "id" : id, "usersInGroup" : usersInGroup}
-    return render(request, 'bid.html', context)
-
 
 def transferMoney(request, id, name):
     user = User.objects.get(username=name)
