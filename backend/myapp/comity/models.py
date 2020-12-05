@@ -65,6 +65,22 @@ class group_table(models.Model):
     def __str__(self):
         return str(self.u_id.username)
 
+class bid(models.Model):
+    g_id = models.ForeignKey(
+        group_info_table,
+        on_delete=models.CASCADE,
+        null=True,
+     )
+    u_id =  models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+     )
+    bidAmount = models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.u_id.username)
+
 
 # class UserInfo(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE)
