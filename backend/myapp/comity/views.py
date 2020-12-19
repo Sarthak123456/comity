@@ -217,6 +217,9 @@ def sendNotficationToStartComity(request, id):
     # print("highestBidUser 2= " , highestBidUser)
 
     if(highestBidUser):
+        if highestBidUser != lastWinner:
+            lastWinner.winner = False
+            lastWinner.save()
         winners  = highestBidUser
         messages.success(request, "{} highestBidUser".format(highestBidUser))
     else:
