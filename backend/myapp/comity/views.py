@@ -68,9 +68,11 @@ def addGroup(request):
     if request.method == "POST":
         name = request.POST.get('name')
         amt = request.POST.get('amt')
+        duration = request.POST.get('duration')
+        print('Duration = ' , duration)
         # user = request.user
         user = User.objects.get(username = request.user)
-        group = group_info_table(name = name , amount = amt, created_by_user = user, created_at= milliseconds, updated_at = milliseconds)
+        group = group_info_table(name = name , amount = amt, duration = duration, created_by_user = user, created_at= milliseconds, updated_at = milliseconds)
         group.save()
         # user = User.objects.get(id=ids)
         # print("ID = " , group.id)
@@ -170,7 +172,7 @@ def sendNotficationToStartComity(request, id):
         currentGroup.save()
     currentDate = getCurrentDateInLocalTimezone()
     usersInGroup = group_table.objects.filter(g_id=id)
-    dateAfterOneMonth = currentDate + relativedelta(months=+1)
+    # dateAfterOneMonth = currentDate + relativedelta(months=+1)
     # print("dateAfterOneMonth = " , dateAfterOneMonth.date())
     # print('getCurrentDateInLocalTimezone = ', getCurrentDateInLocalTimezone().date())
     winners = ''
@@ -348,6 +350,12 @@ def startComity(request, id, highestBidUser, finish):
                 admins = group_table.objects.get(g_id= group , u_id = userss)
 
                 if group.start_date == 0 or getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(group.end_date).date():
+                    duration={"1m" : "month 1" , "2w" : "weeks 2", "1w" : "weeks 1" , "3d" : "days 3"}
+                    print("iuhibhkbk" , duration.get(group.duration).split(' ')[0])
+                    print("time = " , getDateAfterSometime(duration.get(group.duration).split(' ')[0], int(duration.get(group.duration).split(' ')[1])))
+                    # duration={"1m" : "month 1" }
+                    # print("group duration = " , )
+                    # getDateAfterSometime(weeks,2)
                     dateAfterOneMonth= convertMilisToDatetime(getCurrentMilis()) + relativedelta(months=+1)
                     yr =  dateAfterOneMonth.year
                     mn = dateAfterOneMonth.month
@@ -398,6 +406,7 @@ def bidMoney(request, id):
     userInGroup = group_table.objects.get(g_id = id, u_id = user)
     nonWinnerUsersInGroup = group_table.objects.filter(g_id = id, bidAmount=0)
     usersInGroup = group_table.objects.filter(g_id = id)
+    user_info = UserInfo.objects.get(u_id = user)
     # print("nonWinnerUsersInGroup" , nonWinnerUsersInGroup)
     # print("usersInGroup" , usersInGroup)
     currentGroup = group_info_table.objects.get(id = id)
@@ -477,7 +486,7 @@ def bidMoney(request, id):
         checkBidForm(request, totalAmount, lastWinner , id , userInGroup, nonWinnerUsersInGroup)
     # checkSuperuser = usersInGroup.objects.all()
     # messages.success(request, "{} usersInGroup".format(len(usersInGroup)))
-    context = {"name" : str(user), "userInGroup" : userInGroup,"lastWinner" : str(lastWinner), "highestBidUser" : str(highestBidUser), "usersInGroup" : usersInGroup, "showBidInputBox": showBidInputBox, "totalAmt" : totalAmount , "id" : id}
+    context = {"name" : str(user), "userInGroup" : userInGroup,"lastWinner" : str(lastWinner), "highestBidUser" : str(highestBidUser), "usersInGroup" : usersInGroup, "showBidInputBox": showBidInputBox, "totalAmt" : totalAmount , "id" : id,"user_info" : user_info}
     return render(request, 'bid.html', context)
 
 def checkBidForm(request, totalAmount, lastWinner, id , userInGroup, nonWinnerUsersInGroup):

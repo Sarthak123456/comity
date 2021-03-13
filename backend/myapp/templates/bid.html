@@ -8,7 +8,7 @@
 {% comment %} <a href='/bid'>bid</a> <br> <a href='/transfer/{{winner}}'> transfer </a> {% endcomment %}
 
 
-{% if userInGroup.superuser == True %}
+{% if user_info.superuser == True %}
 {% if showBidInputBox %}
 
 {% if lastWinner != name or highestBidUser != name %}
@@ -47,7 +47,7 @@
 <p> Total AMT = {{ totalAmt }}</p>
 {% endif %}
 
-{% if userInGroup.superuser == False %}
+{% if user_info.superuser == False %}
 <h2>{{name}}, </h2> 
 <h2> Please subscribe </h2>
 

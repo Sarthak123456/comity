@@ -19,6 +19,7 @@ class group_info_table(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=122)
     amount = models.CharField(max_length=6)
+    duration = models.CharField(max_length=6, default='1m')
     created_at=models.IntegerField(default=0)
     updated_at=models.IntegerField(default=0)
     start_date=models.IntegerField(default=0)
@@ -40,7 +41,8 @@ class UserInfo(models.Model):
      )
     account_number = models.CharField(max_length=122)
     ifsc = models.CharField(max_length=122)
-    qr_code = models.ImageField()
+    superuser = models.BooleanField(default=False)
+    qr_code = models.ImageField(blank=True)
     
     def __str__(self):
         return self.u_id.username
@@ -59,7 +61,6 @@ class group_table(models.Model):
      )
     start_comity = models.BooleanField(default=False)
     winner = models.BooleanField(default=False)
-    superuser = models.BooleanField(default=False)
     bidAmount = models.IntegerField(default=0)
 
     def __str__(self):

@@ -20,6 +20,15 @@
     <label for="amt">Amount</label>
     <input type="number" class="form-control" id="amt" name = "amt" placeholder="Amount">
   </div>
+   <div class="form-group">
+    <label for="duration">Select Duration</label>
+    <select class="form-control" id="duration" name = "duration" style = "font-size:12px">
+      <option value="1m">1 month</option>
+      <option value="3d">3 days (superuser) </option>
+      <option value="1w">1 week (superuser)</option>
+      <option value="2w">2 weeks (superuser) </option>
+    </select>
+  </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
@@ -29,7 +38,7 @@
 {% endfor %} -->
 
 {% for group in groupList %}
-<a href="/get/{{group.id}}"> {{group.name}}, {{group.amount}} </a> <br>
+<a href="/get/{{group.id}}"> {{group.name}}, {{group.amount}}, {{group.duration}} </a> <br>
 {% endfor %}
 
 
