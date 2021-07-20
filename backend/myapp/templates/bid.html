@@ -11,7 +11,7 @@
 {% if user_info.superuser == True %}
 {% if showBidInputBox %}
 
-{% if lastWinner != name or highestBidUser != name %}
+{% if highestBidUser != name %}
 <form action = "/get/{{id}}/bid" method = "POST">
 {% csrf_token %} 
 {% comment %} {% if userInGroup != latestWinner or latestWinner.bidAmount > 0 %} {% endcomment %}
@@ -30,7 +30,7 @@
 {% for u in usersInGroup %}
 
 {% if u.bidAmount > 0 %}
-{% if u.u_id.username != lastWinner %}
+{% if u.u_id.username != highestBidUser %}
 <p> {{u.u_id.username}} bid ₹{{u.bidAmount}}</p>
 
 {% endif %}

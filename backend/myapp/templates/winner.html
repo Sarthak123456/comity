@@ -4,12 +4,14 @@
 
 {% block body %}
 
-<b><p>{{winner}} chosen at random</p></b>
+<b><p>{{winner}} is the winner</p></b>
 
 
-{% if finish != False %}
+
+{% if finish == "False" %}
 <a href='/get/{{id}}/bid'>bid</a> 
 <br> 
+{% comment %} <h1> str({{finish}} )</h1> {% endcomment %}
 {% endif %}
 
 <a href='/get/{{id}}/transfer/{{winner}}'> transfer </a>

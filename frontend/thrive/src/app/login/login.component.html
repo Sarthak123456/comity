@@ -1,0 +1,28 @@
+
+<section>
+<h1> Login to Thrive!</h1>
+<form class="example-form" #loginFrom = "ngForm" (ngSubmit) = "onSubmit()" novalidate>
+
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput placeholder="Ex. Pizza" #email="ngModel" type ="email" required name ="email" id="email" [(ngModel)] = "loginModel.email">
+    <mat-hint>Errors appear instantly!</mat-hint>
+    <mat-error *ngIf="email.invalid && email.touched">
+      Email is <strong>required</strong>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Password</mat-label>
+    <input matInput placeholder="Ex. Pizza"  #password="ngModel" type ="password" name = "password" required id="password" [(ngModel)] = "loginModel.password">
+    <mat-hint>Errors appear instantly!</mat-hint>
+    <mat-error *ngIf="password.invalid && password.touched">
+      Password is <strong>required</strong>
+    </mat-error>
+  </mat-form-field>
+</form>
+
+<button mat-raised-button color="primary" routerLink = '/addGroup'>Login</button>
+<br>
+<p  class="signup">New here? </p>
+</section>

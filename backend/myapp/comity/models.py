@@ -61,6 +61,7 @@ class group_table(models.Model):
      )
     start_comity = models.BooleanField(default=False)
     winner = models.BooleanField(default=False)
+    round = models.IntegerField(default=0)
     bidAmount = models.IntegerField(default=0)
 
     def __str__(self):
