@@ -1,11 +1,11 @@
 
 <section>
 <h1> Login to Thrive!</h1>
-<form class="example-form" #loginFrom = "ngForm" (ngSubmit) = "onSubmit()" novalidate>
+<form class="example-form" #loginFrom="ngForm" novalidate (ngSubmit)="onSubmit()" #heroForm="ngForm">
 
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Email</mat-label>
-    <input matInput placeholder="Ex. Pizza" #email="ngModel" type ="email" required name ="email" id="email" [(ngModel)] = "loginModel.email">
+    <input matInput placeholder="Ex. Pizza"  type ="email" name ="email" id="email" #email="ngModel" [(ngModel)] = "loginModel.email" required>
     <mat-hint>Errors appear instantly!</mat-hint>
     <mat-error *ngIf="email.invalid && email.touched">
       Email is <strong>required</strong>
@@ -20,9 +20,9 @@
       Password is <strong>required</strong>
     </mat-error>
   </mat-form-field>
+<button mat-raised-button color="primary" [disabled]="!loginFrom.form.valid" >Login</button>
 </form>
 
-<button mat-raised-button color="primary" routerLink = '/addGroup'>Login</button>
 <br>
-<p  class="signup">New here? </p>
+<p routerLink = '/signup' class="signup">New here? </p>
 </section>

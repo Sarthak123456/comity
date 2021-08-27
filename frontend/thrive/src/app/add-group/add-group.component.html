@@ -1,41 +1,64 @@
 
 <h1> Add Group</h1>
 <br>
-<form class="example-form">
+<form class="example-form" (ngSubmit)="addGroup()" #heroForm="ngForm">
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Name</mat-label>
-    <input matInput placeholder="Name of the Group">
+    <input matInput placeholder="Name of the Group" name="nameOfGroup" #nameOfGroup="ngModel" [(ngModel)] = "newGroup.name" required>
+
+    <mat-hint>Errors appear instantly!</mat-hint>
+
+    <mat-error *ngIf="nameOfGroup.invalid && nameOfGroup.touched">
+      nameOfGroup is <strong>required</strong>
+    </mat-error>
   </mat-form-field>
 
-<mat-form-field appearance="fill">
+<mat-form-field appearance="fill" class="example-full-width">
   <mat-label>Time</mat-label>
-  <select matNativeControl required>
-    <option value="volvo">1 Month</option>
-    <option value="saab">1 Week</option>
-    <option value="mercedes">2 Weeks</option>
-    <option value="audi">1 Day</option>
+  <select matNativeControl name="durationOfGroup" #durationOfGroup="ngModel" [(ngModel)] = "newGroup.duration" required>
+    <option value="1m">1 Month</option>
+    <option value="1w">1 Week</option>
+    <option value="2w">2 Weeks</option>
+    <option value="1d">1 Day</option>
   </select>
 </mat-form-field>
 
  <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Amount</mat-label>
-    <input matInput placeholder="Amount of the Group" >
+    <input matInput placeholder="Amount of the Group" type="number" name="amountOfGroup" #amountOfGroup="ngModel" [(ngModel)] = "newGroup.amount" required>
+    <mat-hint>Errors appear instantly!</mat-hint>
+    <mat-error *ngIf="amountOfGroup.invalid && amountOfGroup.touched">
+      amountOfGroup is <strong>required</strong>
+    </mat-error>
+
   </mat-form-field>
 
-<button mat-raised-button color="accent">Add Group</button>
+<button mat-raised-button color="accent" [disabled]="!heroForm.form.valid">Add Group</button>
 </form>
 <br>
 
 <mat-tab-group animationDuration="0ms">
 <!-- Active tab -->
   <mat-tab label="Active">
-    <div *ngFor= "let group of groupDetails">
+  <ng-template mat-tab-label>
+    <span matBadge="{{activeGroupCount>0 ? activeGroupCount : ''}}" matBadgeOverlap="false">Active</span>
+  </ng-template>
+    <div *ngFor= "let group of groupDetails ; index as i">
+      <mat-card class="example-card" *ngIf= "group.status === 'active'">
+        <mat-card-header>
 
-      <mat-card class="example-card"  *ngIf= "group.groupStatus == 0">
-        <mat-card-header >
           <div mat-card-avatar class="example-header-image"></div>
-          <mat-card-title class= "cardTitle" routerLink='/viewGroup'>{{group.groupName}}</mat-card-title>
-          <mat-card-subtitle>{{group.groupDuration}}</mat-card-subtitle>
+          <mat-card-title class= "cardTitle" routerLink='/viewGroup/{{group.g_id}}'>{{group.name}} created by {{group.admin}} </mat-card-title>
+          <mat-card-subtitle>{{group.duration}}</mat-card-subtitle>
+          <!-- <mat-card-subtitle>{{group.g_id}}</mat-card-subtitle> -->
+          <mat-card-subtitle>{{formatter.format(group.totalAmount).split('.')[0]}} total</mat-card-subtitle>
+          <mat-card-subtitle>{{group.usersInGroup.length}} members</mat-card-subtitle>
+          <mat-card-subtitle>{{formatter.format(group.amount).split('.')[0]}}/member</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.updated_date">updated at: {{group.updated_date}} , {{group.updated_time}} </mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.end_date">end date: {{group.end_date}}</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.dateAfterOneDays_date"> Bid open till: {{group.dateAfterOneDays_date}}  </mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.minBidAmountUser">{{group.minBidAmountUser ? "'" + group.minBidAmountUser  + "'" +  ' highest bid user with bid amount ' : ''}} {{formatter.format(group.bid_amount).split('.')[0] ? group.bid_amount : ''}} for round {{group.round}} </mat-card-subtitle>
+
         </mat-card-header>
 
         <mat-card-content>
@@ -43,24 +66,30 @@
         </mat-card-content>
 
         <mat-card-actions>
-          <button mat-raised-button color="accent" data-bs-toggle="modal" data-bs-target="#exampleModal">Start Group</button>
-          <button mat-button (click) = "showBidAmountForms()">Bid</button>
-          <button mat-button routerLink="/viewPaymentDetails">Tranfer</button>
+          <button mat-raised-button color="warn"  *ngIf = "group.usersInGroup.length > 2" (click) = "startGroup(i)"  data-bs-toggle="modal" data-bs-target="#bankDetailsModal" >Start Group</button>
+          <!-- <button mat-raised-button color="warn" data-bs-toggle="modal" data-bs-target="#bankDetailsModal">Start Group</button> -->
+          <!-- <button mat-raised-button color="accent" data-bs-toggle="modal" (click) = "setgroupId(group.g_id)" data-bs-target="#addUserModal">Add Users</button> -->
+          <button mat-button style="display:initial;" id="bidButton{{i}}"   (click) = "showBidAmountForms(i, group.g_id)">Bid</button>
+          <button mat-button *ngIf="userDetails.winner == true" routerLink="/{{userDetails.name}}/bank_details">Tranfer</button>
+          <!--  <button mat-button (click)="deleteGroup(i)">Delete</button> -->
         </mat-card-actions>
 
         <mat-card-footer class="cardFooter">
-         <form class="row g-3" *ngIf="showBidAmountForm">
+        <p class="row g-3" style="display:none;" id="subscribe{{i}}">Please subscribe</p>
+
+         <form class="row g-3" style="display:none;" id="showBidAmountForm{{i}}" (ngSubmit)="bidAmount()" #bidForms="ngForm">
+          <h4> Bid Form </h4>
           <div class="col-md-12">
             <!-- <label for="inputEmail4" class="form-label">Amount</label> -->
-            <input type="email" class="form-control" id="inputEmail4" placeholder="Amount">
+            <input type="number" [class.is-invalid]="inputBidAmount.invalid && inputBidAmount.touched" class="form-control"  id="inputBidAmount{{i}}" value = "500" placeholder="Min bid value {{group.bid_amount}}" name="inputBidAmount" #inputBidAmount="ngModel" [(ngModel)] = "bidForm.amount">
           </div>
 
           <div class="col-md-6">
-              <button type="submit" (click) = "hideBidAmountForm()" class="btn btn-primary">Submit Bid</button>
+              <button type="submit"  [disabled]="!bidForms.form.valid" class="btn btn-primary">Submit Bid</button>
           </div>
 
           <div class="col-md-6">
-              <button type="submit" (click) = "hideBidAmountForm()" class="btn btn-warning">close </button>
+              <button class="btn btn-warning" (click)="showBidAmountForms(i, group.g_id)">close </button>
           </div>
         </form>
 
@@ -70,15 +99,24 @@
   </mat-tab>
 
 
-  <!-- Inacive tab -->
+  <!-- Inactive tab -->
   <mat-tab label="Inactive">
-    <div *ngFor= "let group of groupDetails">
+  <ng-template mat-tab-label>
+    <span matBadge="{{inactiveGroupCount > 0 ? inactiveGroupCount : ''}}" matBadgeOverlap="false">Inactive</span>
+  </ng-template>
+    <div *ngFor= "let group of groupDetails ; index as i">
 
-      <mat-card class="example-card"  *ngIf= "group.groupStatus == 1">
+      <mat-card class="example-card"  *ngIf= "group.status === 'inactive'">
         <mat-card-header >
           <div mat-card-avatar class="example-header-image"></div>
-          <mat-card-title class= "cardTitle" routerLink='/viewGroup'>{{group.groupName}}</mat-card-title>
-          <mat-card-subtitle>{{group.groupDuration}}</mat-card-subtitle>
+          <mat-card-title class= "cardTitle" routerLink='/viewGroup/{{group.g_id}}'>{{group.name}} by {{group.admin}} </mat-card-title>
+          <mat-card-subtitle>{{group.duration}}</mat-card-subtitle>
+          <!-- <mat-card-subtitle>{{group.g_id}}</mat-card-subtitle> -->
+          <mat-card-subtitle>₹{{group.totalAmount}} total</mat-card-subtitle>
+          <mat-card-subtitle>{{group.usersInGroup.length}} members</mat-card-subtitle>
+          <mat-card-subtitle>₹{{group.amount}}/member</mat-card-subtitle>
+          <mat-card-subtitle>{{group.minBidAmountUser ? "'" + group.minBidAmountUser  + "'" +  ' highest bid user with bid amount ' : ''}}  {{group.bid_amount ? group.bid_amount : ''}}</mat-card-subtitle>
+
         </mat-card-header>
 
         <mat-card-content>
@@ -86,9 +124,10 @@
         </mat-card-content>
 
         <mat-card-actions>
-          <button mat-raised-button color="accent" data-bs-toggle="modal" data-bs-target="#exampleModal">Start Group</button>
-          <button mat-button (click) = "showBidAmountForms()">Bid</button>
-          <button mat-button routerLink="/viewPaymentDetails">Tranfer</button>
+          <button mat-raised-button color="warn" *ngIf = "group.usersInGroup.length > 2" data-bs-toggle="modal" data-bs-target="#bankDetailsModal" (click) = "startGroup(i)">Start Group</button>
+          <button mat-raised-button color="accent" data-bs-toggle="modal" (click) = "setgroupId(group.g_id)" data-bs-target="#addUserModal">Add Users</button>
+          <button mat-button (click)="deleteGroup(i)">Delete</button>
+
         </mat-card-actions>
 
         <mat-card-footer>
@@ -99,15 +138,24 @@
     </div>
   </mat-tab>
 
-<!-- Defaulted tab -->
-  <mat-tab label="Defaulted">
-    <div *ngFor= "let group of groupDetails">
-      <mat-card class="example-card"  *ngIf= "group.groupStatus == 2">
+<!-- Completed tab -->
+  <mat-tab label="Completed">
+  <ng-template mat-tab-label>
+    <span matBadge="{{completedGroupCount>0 ? completedGroupCount : ''}}" matBadgeOverlap="false">Completed</span>
+  </ng-template>
+    <div *ngFor= "let group of groupDetails ; index as i">
+      <mat-card class="example-card"  *ngIf= "group.status === 'completed'">
 
         <mat-card-header>
           <div mat-card-avatar class="example-header-image"></div>
-          <mat-card-title class= "cardTitle" routerLink='/viewGroup'>{{group.groupName}}</mat-card-title>
-          <mat-card-subtitle>{{group.groupDuration}}</mat-card-subtitle>
+          <mat-card-title class= "cardTitle" routerLink='/viewGroup/{{group.g_id}}'>{{group.name}} by {{group.admin}} </mat-card-title>
+          <mat-card-subtitle>{{group.duration}}</mat-card-subtitle>
+          <mat-card-subtitle>{{group.g_id}}</mat-card-subtitle>
+          <mat-card-subtitle>₹{{group.totalAmount}} total</mat-card-subtitle>
+          <mat-card-subtitle>{{group.usersInGroup.length}} members</mat-card-subtitle>
+          <mat-card-subtitle>₹{{group.amount}}/member</mat-card-subtitle>
+          <mat-card-subtitle>{{group.minBidAmountUser ? "'" + group.minBidAmountUser  + "'" +  ' highest bid user with bid amount ' : ''}}  {{group.bid_amount ? group.bid_amount : ''}}</mat-card-subtitle>
+
         </mat-card-header>
 
         <mat-card-content>
@@ -115,12 +163,12 @@
         </mat-card-content>
 
         <mat-card-actions>
-          <button mat-raised-button color="accent" data-bs-toggle="modal" data-bs-target="#exampleModal">Start Group</button>
-          <button mat-button (click) = "showBidAmountForms()">Bid</button>
-          <button mat-button routerLink="/viewPaymentDetails">Tranfer</button>
+         <h4 class='complete'>Group Completed!</h4>
+
         </mat-card-actions>
 
         <mat-card-footer>
+         <button mat-button (click)="deleteGroup(i)">Delete</button>
 
         </mat-card-footer>
 
@@ -130,8 +178,8 @@
 </mat-tab-group>
 
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- bankDetailsModal -->
+<div class="modal fade" id="bankDetailsModal" tabindex="-1" *ngIf="showBankDetailsModal" aria-labelledby="bankDetailsModal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -139,56 +187,141 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-
+        <form>
           <div class="mb-3 row">
             <label for="inputPassword" class="col-sm-2 col-form-label">Account Number</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputPassword">
+              <input type="text" class="form-control" id="accountNumber" name="accountNumber" #accountNumber="ngModel" [(ngModel)] = "bankDetails.accountNumber">
             </div>
         </div>
 
-        <div class="mb-3 row">
+        <!-- <div class="mb-3 row">
             <label for="inputPassword" class="col-sm-2 col-form-label">Name</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputPassword">
+              <input type="text" class="form-control" id="inputPassword2">
             </div>
-        </div>
+        </div> -->
 
         <div class="mb-3 row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Bank Address</label>
+            <label for="inputPassword" class="col-sm-2 col-form-label">Branch Address</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputPassword">
+              <input type="text" class="form-control" id="branchAddress" name="branchAddress" #branchAddress="ngModel" [(ngModel)] = "bankDetails.branchAddress">
             </div>
         </div>
 
         <div class="mb-3 row">
             <label for="inputPassword" class="col-sm-2 col-form-label">IFSC</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputPassword">
+              <input type="text" class="form-control" id="ifsc" name="ifsc" #ifsc="ngModel" [(ngModel)] = "bankDetails.ifsc">
             </div>
         </div>
 
+        <div class="mb-3">
+          <label for="formFile" class="form-label">Gpay</label>
+          <input class="form-control" type="file" (change)='onGpayImageChanged($event)' id="gpayQr" name="gpayQr" >
+        </div>
+
       <div class="mb-3">
-        <label for="formFile" class="form-label">Gpay</label>
-        <input class="form-control" type="file" id="formFile">
-      </div>
+          <label for="formFile" class="form-label">PayTm</label>
+          <input class="form-control" type="file" (change)='onPaytmImageChanged($event)' id="paytmQr" name="paytmQr" >
+        </div>
 
-     <div class="mb-3">
-        <label for="formFile" class="form-label">PayTm</label>
-        <input class="form-control" type="file" id="formFile">
-      </div>
+        <div class="mb-3">
+          <label for="formFile" class="form-label">PhonePe</label>
+          <input class="form-control" type="file" (change)='onPhonepeImageChanged($event)' id="phonepeQr" name="phonepeQr" >
+        </div>
+      </form>
 
-       <div class="mb-3">
-        <label for="formFile" class="form-label">PhonePe</label>
-        <input class="form-control" type="file" id="formFile">
-      </div>
 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-primary" (click)= "onBankDetails()">Save changes</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Button trigger modal -->
+<button type="button" #staticBackdrop [hidden]="true" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Launch static backdrop modal
+</button>
+
+<!-- Invite user Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5> Sarthak Invited you to join group ' asdasd ' </h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Accept</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Deny</button>
       </div>
     </div>
   </div>
 </div>
 
+
+
+
+<!-- addUserModal Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Users</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <form class="example-form" (ngSubmit)="searchUser()" #searchUserForm="ngForm">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>Username</mat-label>
+              <input type="text" matInput  placeholder="Ex. Sarthak" name="username" #username="ngModel" [(ngModel)]="userName.user" required>
+              <mat-hint>Errors appear instantly!</mat-hint>
+              <mat-error *ngIf="username.invalid && username.touched">
+                Username is <strong>required</strong>
+              </mat-error>
+            </mat-form-field>
+
+            <button mat-raised-button color="warn" [disabled]="!searchUserForm.form.valid">Search</button>
+          </form>
+
+          <table class="table table-striped" *ngIf="userDetails; else invite">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">{{userDetails.user_id}}</th>
+                <td>{{userDetails.first_name}}</td>
+                <td>{{userDetails.last_name}}</td>
+                <td>{{userDetails.userName}}</td>
+                <td>{{userDetails.email}}</td>
+                <td> <button type="button" (click) = "addUserToGroup(userDetails)" class="btn btn-info">Add</button> </td>
+              </tr>
+
+            </tbody>
+          </table>
+          <div>
+          <ng-template #invite>
+            <p> User with username {{userName.user}} not found!</p> <button>Invite</button>
+          </ng-template>
+          </div>
+      </div>
+
+    </div>
+  </div>
+</div>

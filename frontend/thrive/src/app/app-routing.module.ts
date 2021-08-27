@@ -11,10 +11,9 @@ const routes: Routes = [
   { path: '', component: MainContentComponent },
   { path: 'login', component: LoginComponent },
   { path: 'addGroup', component: AddGroupComponent },
-  { path: 'viewGroup', component: ViewGroupComponent },
-  { path: 'viewPaymentDetails', component: ViewPaymentDetailsComponent },
+  { path: 'viewGroup/:groupId', component: ViewGroupComponent },
+  { path: ':winner/bank_details', component: ViewPaymentDetailsComponent },
   { path: 'signup', component: SignUpComponent }
-
 
 ];
 
