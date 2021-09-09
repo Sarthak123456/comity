@@ -7,7 +7,7 @@ export class Signup {
       public confirmPassword:string,
       public userName:string,
       public email:string,
-      public mobile:string,
+      public mobile:number,
       public addressLine1:string,
       public addressLine2:string,
 

@@ -8,6 +8,23 @@ from dateutil.relativedelta import relativedelta
 def my_cron_job():
     print('sample cron job')
     groups = group_info_table.objects.all()
+    users = User.objects.all()
+    for user in users:
+        user_info = UserInfo.objects.get(u_id = user.id) if UserInfo.objects.filter(u_id = user.id).exists() else None
+        # -------------- Deactivate Subscription -------------------
+        if user_info:
+            if (getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(user_info.superuser_end_date)):
+                print("Deactivating subscription for user =" , user.username)
+            # deactivateSubscription(user.username)
+
+                user_info.superuser = False
+                user_info.superuser_start_date = 0
+                user_info.superuser_end_date = 0
+                user_info.save()
+                print("Deactivating subscription successful for user =" , user.username)
+
+
+
     for group in groups:
         if group.status == 'active':
             print("Active group: ",  group.id)
@@ -16,6 +33,8 @@ def my_cron_job():
             # Getting 2 days after the end_date since at midnight the date changes
             dateAfterOneDays = convertMilisToDatetime(currentGroup.end_date) + relativedelta(days=+2)
             allWinners = group_table.objects.filter(g_id=id, winner=True)
+
+
             # -------------- Bid money logic -------------------
             if (getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(currentGroup.bid_date)):
                 # # dateAfterOneDays = convertMilisToDatetime(currentGroup.start_date) + relativedelta(days=+3)
@@ -117,6 +136,19 @@ def startGroup(request, winner, id, finish):
             print("randomlySelectedWinner = ", randomlySelectedWinner)
             print("randomlySelectedWinner = %s", winner)
             return winner
+
+def deactivateSubscription(username):
+    username = username
+    user = User.objects.get(username=username)
+    user_info = UserInfo.objects.get(u_id=user.id) if UserInfo.objects.filter(
+        u_id=user.id).exists() else None
+    if user_info:
+        user_info.superuser = False
+        user_info.superuser_start_date = 0
+        user_info.superuser_end_date = 0
+        user_info.save()
+        return True
+    return False
 
 
 def getRandom(id, request):

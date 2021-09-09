@@ -10,12 +10,14 @@ urlpatterns = [
     path('', views.index, name='home'),
     path('about', views.about, name='about'),
     path('login', csrf_exempt(views.loginUser)),
-    path('logout', views.logoutUser, name='logoutUser'),
+    path('logout', csrf_exempt(views.logoutUser)),
     path('signup', csrf_exempt(views.signUpUser)),
+    path('activate_subscription', csrf_exempt(views.activateSubscription)),
+    path('deactivate_subscription', csrf_exempt(views.deactivateSubscription)),
     path('bank_details', csrf_exempt(views.saveBankDetails)),
     path('get/bank_details', csrf_exempt(views.getBankDetails)),
     path('addGroup', csrf_exempt(views.addGroup)),
-    path('get/groups', views.getAllGroups, name='getGroups'),
+    path('get/groups', csrf_exempt(views.getAllGroups)),
     path('add/user/', csrf_exempt(views.addUserToGroups)),
     path('group/start/', csrf_exempt(views.sendNotficationToStartComity)),
     path('get/<str:id>/winner/<str:winner>/<str:finish>', views.returnWinner, name="returnWinner"),
@@ -29,5 +31,11 @@ urlpatterns = [
     path('delete/group/<str:id>', csrf_exempt(views.deleteGroup)),
     path('get/user/', csrf_exempt(views.getUser)),
     path('get/group/users/', csrf_exempt(views.viewUsersInGroup)),
+    path('get/razorpay/order_id/', csrf_exempt(views.createRazorPayOrderId)),
+    path('get/razorpay/save/', csrf_exempt(views.verifyAndSavePayment)),
+
+
+
+
 
 ]+ static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

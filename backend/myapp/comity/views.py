@@ -6,6 +6,8 @@ import uuid
 # from django.db.models import Q
 # from time import time
 import datetime
+import razorpay
+import json
 from random import randint
 import logging
 from django.contrib import messages
@@ -15,6 +17,9 @@ from django.contrib.auth import logout, authenticate, login
 from dateutil.relativedelta import relativedelta
 from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
+from django.db import IntegrityError
+import jwt
+
 
 from django.core import serializers
 
@@ -53,16 +58,14 @@ def addGroup(request):
     milliseconds = getCurrentMilis()
     logger = getLogger()
     logger.debug("Added Group")
-    print("user id in add groups = ",  request.session.get('user_id'))
 
     # date = datetime.fromtimestamp(milliseconds/1000.0)
     if request.method == "POST":
-        print("user id in add groups = ", request.session.get('user_id'))
         name = request.POST.get('name')
         amt = request.POST.get('amount')
         duration = request.POST.get('duration')
         # user = request.user
-        user = User.objects.get(username=request.POST.get('user'))
+        user = User.objects.get(username=decryptToken(request.POST.get('token')))
         group = group_info_table(name=name, amount=amt, duration=duration, created_by_user=user,
                                  created_at=milliseconds, updated_at=milliseconds)
         group.save()
@@ -73,7 +76,7 @@ def addGroup(request):
         users = group_table(g_id=groupUuid, u_id=u_id)
         users.save()
         # messages.success(request, '"{}" saved!'.format(name))
-        groupUuid = group_info_table.objects.get(id=group.id)
+        # groupUuid = group_info_table.objects.get(id=group.id)
         usersInGroup = group_table.objects.filter(g_id=group.id)
 
         users = []
@@ -83,7 +86,7 @@ def addGroup(request):
                 "id": user.u_id.id,
                 "first_name": user.u_id.first_name,
                 "last_name": user.u_id.last_name,
-                "email": user.u_id.email,
+                "email": user.u_id.email
             }
             )
 
@@ -93,7 +96,8 @@ def addGroup(request):
                 "duration": groupUuid.duration,
                 "g_id" : groupUuid.id,
                 "usersInGroup": users,
-                "admin" : groupUuid.created_by_user.username
+                "admin" : groupUuid.created_by_user.username,
+                "status": groupUuid.status
             }
 
 
@@ -143,31 +147,52 @@ def loginUser(request):
         if user is not None:
             login(request, user)
             user = User.objects.select_related().get(username=request.user)
-
-            return JsonResponse({'user': str(user)})
+            token = returnToken(user.username)
+            return JsonResponse({'token': str(token) , "user" : user.username})
     return HttpResponse('Failed')
+
+
+def returnToken(username):
+    encoded_jwt = jwt.encode({"username": username}, "secret", algorithm="HS256")
+    # key = "FLqz4-FWMT4M_0dihy5vqvG8rwvS6F7QQxFhI6lW1CU="
+    # f = Fernet(key)
+    # username = str(username)
+    # encrypted_data = f.encrypt(str.encode(f'{username}'))
+    return encoded_jwt
+
+def decryptToken(encoded_jwt):
+    # key = "FLqz4-FWMT4M_0dihy5vqvG8rwvS6F7QQxFhI6lW1CU="
+    # f = Fernet(key)
+    # decrypted_data = f.decrypt(str.encode(encrypted_data.split("'")[1]))
+    decrypted_data = jwt.decode(encoded_jwt, "secret", algorithms=["HS256"])
+    return decrypted_data.get('username')
+
 
 
 def signUpUser(request):
     if request.method == "POST":
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        mobile = request.POST.get('mobile')
-        address_line_1 = request.POST.get('address_line_1')
-        address_line_2 = request.POST.get('address_line_2')
-        password = request.POST.get('password')
+        try:
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            mobile = request.POST.get('mobile')
+            address_line_1 = request.POST.get('address_line_1')
+            address_line_2 = request.POST.get('address_line_2')
+            password = request.POST.get('password')
 
-        print(password)
+            print(password)
 
-        user = User(username = username, first_name =first_name, last_name=last_name, email=email)
-        user.password = make_password(password)
-        user.save()
-        user_info = UserInfo(u_id = user, mobile=mobile, address_line_1 = address_line_1, address_line_2 = address_line_2)
-        user_info.save()
+            user = User(username = username, first_name =first_name, last_name=last_name, email=email)
+            user.password = make_password(password)
+            user.save()
+            user_info = UserInfo(u_id = user, mobile=mobile, address_line_1 = address_line_1, address_line_2 = address_line_2)
+            user_info.save()
+        except IntegrityError:
+            print("Username has to be unique", username)
+            return JsonResponse({"message": f'Username {username} already exists!'})
 
-        return HttpResponse('success')
+        return JsonResponse({"message" :'success'})
     return HttpResponse('failed')
 
     #     form = UserCreationForm(request.POST)
@@ -184,16 +209,16 @@ def saveBankDetails(request):
         name = request.POST.get('name')
         ifsc = request.POST.get('ifsc')
         branch_address = request.POST.get('branch_address')
-        gpay_qr = request.FILES.get("gpay_qr") if request.FILES["gpay_qr"] else ''
-        paytm_qr = request.FILES["paytm_qr"] if request.FILES.get("paytm_qr") else ''
-        phonepe_qr = request.FILES["phonepe_qr"] if request.FILES.get("phonepe_qr") else ''
+        gpay_qr = request.FILES.get("gpay_qr") if request.FILES.get("gpay_qr") else ''
+        paytm_qr = request.FILES.get("paytm_qr") if request.FILES.get("paytm_qr") else ''
+        phonepe_qr = request.FILES.get("phonepe_qr") if request.FILES.get("phonepe_qr") else ''
 
         print(ifsc , phonepe_qr, branch_address)
 
         user = User.objects.get(username = name)
         # user.password = make_password(password)
         # user.save()
-        user_info = UserInfo.objects.get_or_create(u_id = user)
+        # user_info = UserInfo.objects.get_or_create(u_id = user)
         user_info = UserInfo.objects.get(u_id = user)
         user_info.account_number = account_number
         user_info.ifsc = ifsc
@@ -246,9 +271,15 @@ def getBankDetails(request):
 
 
 def logoutUser(request):
-    logout(request)
-    return redirect('/login')
+    if request.method == "POST":
+        user = User.objects.get(username = 'Sarthak')
 
+        print("logout(request) = " , logout(request).encode())
+
+        print("is_anonymous = " , user.is_anonymous)
+        print("request.user = " , request.user.username)
+        # user.session_set.all().delete()
+        return JsonResponse({"message" : "Success"})
 
 def addUserToGroups(request):
     print("addusrss")
@@ -343,78 +374,173 @@ def getUser(request):
                             )
     return HttpResponse('Failed')
 
-
 def getAllGroups(request):
-    data = []
-    groups = group_info_table.objects.select_related().all()
+    if request.method == 'POST':
+        data = []
+        user = User.objects.get(username=decryptToken(request.POST.get('token')))
+        groups = group_info_table.objects.select_related().all()
 
-    for group in groups:
-        id = group.id
-        usersInGroup = group_table.objects.filter(g_id=id)
-        currentGroup = group_info_table.objects.select_related().get(id=id)
-        dateAfterOneDays = convertMilisToDatetime(currentGroup.updated_at) + relativedelta(days=+1)
-        totalAmount = int(len(usersInGroup)) * int(currentGroup.amount)
-        minBidAmount = totalAmount / 100
-        allWinners = group_table.objects.filter(g_id=id, winner=True)
-        user_id = currentGroup.created_by_user.id
-        # user_details = User.objects.get(id = user_id)
-        # profile_details = Profile.objects.all()
-        # print("user_details = " , user_details)
-        # print("profile_details = " , profile_details)
-        # print("user" , user_id)
-        user_info = UserInfo.objects.get(u_id=user_id) if UserInfo.objects.filter(u_id=user_id).exists() else None
-        minBidAmountUser = ''
-        if len(bid.objects.all()) > 0:
-            minBidAmountUser = bid.objects.select_related().filter(g_id=id, bidAmount__gt=0).order_by('bidAmount').last()
+        for group in groups:
+            id = group.id
+            usersInGroup = group_table.objects.filter(g_id=id)
+            currentGroup = group_info_table.objects.select_related().get(id=id)
+            dateAfterOneDays = convertMilisToDatetime(currentGroup.updated_at) + relativedelta(days=+1)
+            totalAmount = int(len(usersInGroup)) * int(currentGroup.amount)
+            minBidAmount = totalAmount / 100
+            allWinners = group_table.objects.filter(g_id=id, winner=True)
+            user_id = currentGroup.created_by_user.id
+            # user_details = User.objects.get(id = user_id)
+            # profile_details = Profile.objects.all()
+            # print("user_details = " , user_details)
+            # print("profile_details = " , profile_details)
+            # print("user" , user_id)
+            minBidAmountUser = ''
+            user_info = UserInfo.objects.get(u_id=user_id) if UserInfo.objects.filter(
+                u_id=user_id).exists() else None
+            if len(bid.objects.all()) > 0:
+                minBidAmountUser = bid.objects.select_related().filter(g_id=id, bidAmount__gt=0).order_by('bidAmount').last()
 
-        users = []
-        for user in usersInGroup:
-            users.append({
-                "name" : user.u_id.username,
-                "id" : user.u_id.id,
-                "first_name" : user.u_id.first_name,
-                "last_name" : user.u_id.last_name,
-                "email" : user.u_id.email
+            users = []
+            for user in usersInGroup:
+                user_info = UserInfo.objects.get(u_id=user.u_id.id) if UserInfo.objects.filter(
+                    u_id=user.u_id.id).exists() else None
+                users.append({
+                    "username" : user.u_id.username,
+                    "id" : user.u_id.id,
+                    "first_name" : user.u_id.first_name,
+                    "last_name" : user.u_id.last_name,
+                    "email" : user.u_id.email,
+                    "account_number" : user_info.account_number if user_info else None,
+                    "ifsc" : user_info.ifsc if user_info else None,
+                    "superuser": user_info.superuser if user_info else None,
+                    }
+                )
+
+
+            data.append(
+                {
+
+                    "minBidAmountUser": minBidAmountUser.u_id.username if minBidAmountUser else None,
+                    "bid_amount": minBidAmountUser.bidAmount if minBidAmountUser else None,
+                    "updated_date": convertMilisToDatetime(minBidAmountUser.g_id.updated_at).date() if minBidAmountUser else None,
+                    "updated_time": convertMilisToDatetime(minBidAmountUser.g_id.updated_at).time() if minBidAmountUser else None,
+                    "totalAmount": totalAmount,
+                    "usersInGroup": users,
+                    "minBidAmount": minBidAmount,
+                    "dateAfterOneDays_date": convertMilisToDatetime(currentGroup.bid_date).date() if currentGroup.bid_date else None,
+                    "dateAfterOneDays_time": dateAfterOneDays.time(),
+                    "admin" : currentGroup.created_by_user.username,
+                    "name" : currentGroup.name,
+                    "duration" : currentGroup.duration,
+                    "amount" : currentGroup.amount,
+                    "g_id" : currentGroup.id,
+                    "status" : currentGroup.status,
+                    "end_date" : convertMilisToDatetime(currentGroup.end_date).date() if currentGroup.end_date else None,
+                    "round" : len(allWinners)
+
                 }
             )
 
-
-        data.append(
-            {
-
-                "minBidAmountUser": minBidAmountUser.u_id.username if minBidAmountUser else None,
-                "bid_amount": minBidAmountUser.bidAmount if minBidAmountUser else None,
-                "updated_date": convertMilisToDatetime(minBidAmountUser.g_id.updated_at).date() if minBidAmountUser else None,
-                "updated_time": convertMilisToDatetime(minBidAmountUser.g_id.updated_at).time() if minBidAmountUser else None,
-                "totalAmount": totalAmount,
-                "usersInGroup": users,
-                "minBidAmount": minBidAmount,
-                "dateAfterOneDays_date": convertMilisToDatetime(currentGroup.bid_date).date() if currentGroup.bid_date else None,
-                "dateAfterOneDays_time": dateAfterOneDays.time(),
-                "admin" : currentGroup.created_by_user.username,
-                "name" : currentGroup.name,
-                "duration" : currentGroup.duration,
-                "amount" : currentGroup.amount,
-                "g_id" : currentGroup.id,
-                "status" : currentGroup.status,
-                "end_date" : convertMilisToDatetime(currentGroup.end_date).date() if currentGroup.end_date else None,
-                "superuser" : user_info.superuser if user_info else None,
-                "account_number" : user_info.account_number if user_info else None,
-                "ifsc" : user_info.ifsc if user_info else None,
-                "round" : len(allWinners)
-
-            }
-        )
-
-    # SomeModel_json = serializers.serialize("json", group_info_table.objects.all())
-    # data = {"groups": SomeModel_json}
-    return JsonResponse(data, safe=False)
+        # SomeModel_json = serializers.serialize("json", group_info_table.objects.all())
+        # data = {"groups": SomeModel_json}
+        return JsonResponse(data, safe=False)
+        # return HttpResponse("Not Authenticated")
     # return JsonResponse(group_info_table.objects.all())
 
 
 def deleteAllGroups(request):
     group_info_table.objects.all().delete()
     return JsonResponse({"groupsDelete": "True"})
+
+def activateSubscription(request):
+    logger = getLogger()
+    if request.method == 'POST':
+        username = decryptToken(request.POST.get('token'))
+        user = User.objects.get(username=username)
+        logger.info("Activating subscription for user = " + user.username)
+        user_info = UserInfo.objects.get(u_id=user.id) if UserInfo.objects.filter(
+            u_id=user.id).exists() else None
+        if user_info:
+            user_info.superuser = True
+            user_info.superuser_start_date = getCurrentMilis()
+            dateAfterOneMonth = getCurrentDateInLocalTimezone() + relativedelta(days=+30)
+            user_info.superuser_end_date = dateAfterOneMonth.timestamp() * 1000
+            user_info.save()
+            logger.info("Activating subscription successful for user = " +  user.username)
+            return JsonResponse({"activate_subscription": "True"})
+    return HttpResponse("activate_subscription : False")
+
+def deactivateSubscription(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        user = User.objects.get(username=username)
+        user_info = UserInfo.objects.get(u_id=user.id) if UserInfo.objects.filter(
+            u_id=user.id).exists() else None
+        if user_info:
+            user_info.superuser = False
+            user_info.superuser_start_date = 0
+            user_info.superuser_end_date = 0
+            user_info.save()
+            return JsonResponse({"deactivate_subscription": "True"})
+    return HttpResponse("deactivate_subscription : False")
+
+
+def createRazorPayOrderId(request):
+    if request.method == 'POST':
+        secret_id= 'rzp_test_nu9LsvfHJHqHQx'
+        secret_key = 'vqt4RvJIR5NeyWfMAcWcGuPY'
+
+        client = razorpay.Client(auth=(secret_id, secret_key))
+        order_amount = request.POST.get('order_amount')
+        order_currency = 'INR'
+        order_receipt = request.POST.get('group_id')
+
+        order_id = client.order.create(dict(amount=order_amount, currency=order_currency, receipt=order_receipt))
+        print("order_id = " , order_id.get('id'))
+        if order_id:
+            user = User.objects.get(username=decryptToken(request.POST.get('token')))
+            user_info = UserInfo.objects.get(u_id=user.id)
+            user_info.order_id = order_id.get('id')
+            user_info.save()
+
+
+        return JsonResponse({"createRazorPayOrderId": "True" , "order_id" : order_id})
+    return JsonResponse({"createRazorPayOrderId": "False"})
+
+def verifyAndSavePayment(request):
+    razorpay_payment_id = request.POST.get('razorpay_payment_id')
+    razorpay_order_id = request.POST.get('razorpay_order_id')
+    razorpay_signature = request.POST.get('razorpay_signature')
+
+    secret_id = 'rzp_test_nu9LsvfHJHqHQx'
+    secret_key = 'vqt4RvJIR5NeyWfMAcWcGuPY'
+
+    client = razorpay.Client(auth=(secret_id, secret_key))
+
+    params_dict = {
+        'razorpay_payment_id': razorpay_payment_id,
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_signature': razorpay_signature
+    }
+
+    try:
+        client.utility.verify_payment_signature(params_dict)
+
+        user = User.objects.get(username=decryptToken(request.POST.get('token')))
+        user_info = UserInfo.objects.get(u_id=user.id)
+        user_info.razorpay_order_id = razorpay_order_id
+        user_info.razorpay_payment_id = razorpay_payment_id
+        user_info.razorpay_signature = razorpay_signature
+        user_info.superuser = True
+        user_info.superuser_start_date = getCurrentMilis()
+        dateAfterOneMonth = getCurrentDateInLocalTimezone() + relativedelta(days=+30)
+        user_info.superuser_end_date = dateAfterOneMonth.timestamp() * 1000
+        user_info.save()
+        return JsonResponse({"Razorpay_payment": "success"})
+
+    except:
+        return JsonResponse({"Razorpay_payment": "failed"})
+
 
 
 def deleteGroup(request, id):
@@ -435,7 +561,7 @@ def sendNotficationToStartComity(request):
         group = group_info_table.objects.get(id=id)
         group.updated_at = milliseconds
         group.save()
-        user = User.objects.get(username=request.POST.get('username'))
+        user = User.objects.get(username=decryptToken(request.POST.get('token')))
         admin = group_table.objects.get(g_id=group, u_id=user)
         admin.start_comity = True
         admin.save()
@@ -487,35 +613,35 @@ def sendNotficationToStartComity(request):
 
 
     # Logic when group ends 
-    elif (getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(group.end_date).date()):
-    # elif(getCurrentDateInLocalTimezone().date() == getCurrentDateInLocalTimezone().date()):
-
-
-        logger.debug("allWinners = %s", allWinners)
-        bid.objects.filter(g_id=id).delete()
-        winner = bid.objects.select_related().filter(g_id=id, bidAmount__gt=0).order_by('bidAmount').last()
-
-
-
-        # import pdb;
-        # pdb.set_trace()
-        winner = startGroup(request, winner, logger, id, False)
-
-        data = {
-            "name": winner.u_id.username,
-            "winner" : winner.winner,
-            "start_comity": winner.start_comity,
-            "round": winner.round,
-            "bid_amount": winner.bidAmount
-        }
-        print("end date winner" , data)
-
-        logger.debug("Logic when group ends %s", winner)
-        setGroupEndDate(group)
-
-
-        # qs_json = serializers.serialize('json', lastWinner)
-        return JsonResponse(data, safe=False)
+    # elif (getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(group.end_date).date()):
+    # # elif(getCurrentDateInLocalTimezone().date() == getCurrentDateInLocalTimezone().date()):
+    #
+    #
+    #     logger.debug("allWinners = %s", allWinners)
+    #     bid.objects.filter(g_id=id).delete()
+    #     winner = bid.objects.select_related().filter(g_id=id, bidAmount__gt=0).order_by('bidAmount').last()
+    #
+    #
+    #
+    #     # import pdb;
+    #     # pdb.set_trace()
+    #     winner = startGroup(request, winner, logger, id, False)
+    #
+    #     data = {
+    #         "name": winner.u_id.username,
+    #         "winner" : winner.winner,
+    #         "start_comity": winner.start_comity,
+    #         "round": winner.round,
+    #         "bid_amount": winner.bidAmount
+    #     }
+    #     print("end date winner" , data)
+    #
+    #     logger.debug("Logic when group ends %s", winner)
+    #     setGroupEndDate(group)
+    #
+    #
+    #     # qs_json = serializers.serialize('json', lastWinner)
+    #     return JsonResponse(data, safe=False)
 
         # return redirect('/get/{}/winner/{}/{}'.format(id, winner, False))
 
@@ -523,18 +649,18 @@ def sendNotficationToStartComity(request):
     # In last round select the remaining user 
     elif (len(allWinners) == len(group_table.objects.filter(g_id=group))):
 
-        if (getCurrentDateInLocalTimezone().date() >= convertMilisToDatetime(group.end_date).date()):
-        # if(getCurrentDateInLocalTimezone().date() >= getCurrentDateInLocalTimezone().date()):
+        # if (getCurrentDateInLocalTimezone().date() >= convertMilisToDatetime(group.end_date).date()):
+        # # if(getCurrentDateInLocalTimezone().date() >= getCurrentDateInLocalTimezone().date()):
+        #
+        #     group.status = 'completed'
+        #     group.save()
+        #
+        #     messages.success(request, "Finish")
+        #     logger.debug("Finish")
+        #     return JsonResponse({"finished": group.status}, safe=False)
+        #     # return redirect('/get/{}'.format(id))
 
-            group.status = 'completed'
-            group.save()
-
-            messages.success(request, "Finish")
-            logger.debug("Finish")
-            return JsonResponse({"finished": group.status}, safe=False)
-            # return redirect('/get/{}'.format(id))
-
-        else:
+        # else:
             round = len(allWinners)
             winnerLeft = group_table.objects.get(g_id=id, winner=True, round=int(round))
             winner = winnerLeft
@@ -735,10 +861,10 @@ def bidMoney(request):
     dateAfterOneDays = convertMilisToDatetime(currentGroup.start_date) + relativedelta(days=+1)
 
     # milis = date_to_unix_time_millis(dateAfterOneDays.date())
-    milliseconds_since_epoch = dateAfterOneDays.timestamp() * 1000
+    milliseconds_since_one_day = dateAfterOneDays.timestamp() * 1000
     print("date = " , dateAfterOneDays.date())
-    print("milis = " , milliseconds_since_epoch)
-    currentGroup.bid_date = milliseconds_since_epoch
+    print("milis = " , milliseconds_since_one_day)
+    currentGroup.bid_date = milliseconds_since_one_day
     currentGroup.save()
     highestBidUser = bid.objects.filter(g_id=id, bidAmount__gt=0).order_by('bidAmount').last()
     print("highestBidUser in bid = " , highestBidUser)

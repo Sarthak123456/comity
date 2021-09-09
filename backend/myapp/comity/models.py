@@ -42,6 +42,7 @@ class UserInfo(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         null=True,
+        related_name='user_info'
      )
     account_number = models.CharField(max_length=20)
     ifsc = models.CharField(max_length=20)
@@ -55,6 +56,10 @@ class UserInfo(models.Model):
     mobile = models.IntegerField(max_length=20, blank=False, default=0)
     address_line_1 = models.CharField(max_length=100, blank=True, default='')
     address_line_2 = models.CharField(max_length=100, blank=True, default='')
+    order_id = models.CharField(max_length=50, blank=True, default='')
+    razorpay_payment_id = models.CharField(max_length=50, blank=True, default='')
+    razorpay_order_id = models.CharField(max_length=50, blank=True, default='')
+    razorpay_signature = models.CharField(max_length=100, blank=True, default='')
 
     def __str__(self):
         return self.u_id.username

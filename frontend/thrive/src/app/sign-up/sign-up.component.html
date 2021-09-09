@@ -1,9 +1,14 @@
+<nav>
+<app-header></app-header>
+</nav>
+
+<section>
 <h1> Sign up</h1>
 
-<form class="row g-3" (ngSubmit) = "onSignUp()">
+<form class="row g-3" (ngSubmit) = "onSignUp()" #signUpForm="ngForm">
  <div class="col-md-6">
-    <label for="inputEmail4" class="form-label">User Name</label>
-    <input type="text" class="form-control" id="userName" name="userName" #userName="ngModel" [(ngModel)] = "signUp.userName">
+    <label for="inputEmail4" class="form-label">Username<small>(used for login)</small></label>
+    <input type="text" class="form-control" [class.is-invalid] = "userName.invalid && userName.touched" id="userName" name="userName" #userName="ngModel" [(ngModel)] = "signUp.userName">
   </div>
   <div class="col-md-6">
     <label for="inputEmail4" class="form-label">First Name</label>
@@ -19,7 +24,7 @@
   </div>
   <div class="col-md-6">
     <label for="inputPassword4" class="form-label">Mobile</label>
-    <input type="text" class="form-control" id="mobile" name="mobile" #mobile="ngModel" [(ngModel)] = "signUp.mobile">
+    <input type="number" class="form-control" id="mobile" name="mobile" #mobile="ngModel" [(ngModel)] = "signUp.mobile">
   </div>
   <div class="col-12">
     <label for="inputAddress" class="form-label">Address Line 1</label>
@@ -40,6 +45,7 @@
   </div>
 
   <div class="col-12">
-    <button type="submit" class="btn btn-primary">Sign up</button>
+    <button type="submit" [class.disabled]="!signUpForm.form.valid" id="signUpForm" class="btn btn-warning">Sign up</button>
   </div>
 </form>
+</section>

@@ -1,4 +1,10 @@
 
+
+<nav>
+<app-header></app-header>
+</nav>
+
+<div class='container shrink'>
 <h1> Add Group</h1>
 <br>
 <form class="example-form" (ngSubmit)="addGroup()" #heroForm="ngForm">
@@ -17,9 +23,9 @@
   <mat-label>Time</mat-label>
   <select matNativeControl name="durationOfGroup" #durationOfGroup="ngModel" [(ngModel)] = "newGroup.duration" required>
     <option value="1m">1 Month</option>
-    <option value="1w">1 Week</option>
-    <option value="2w">2 Weeks</option>
-    <option value="1d">1 Day</option>
+    <option value="1w" disabled>1 Week<small>(coming soon)</small></option>
+    <option value="2w" disabled>2 Weeks<small>(coming soon)</small></option>
+    <option value="1d" disabled>1 Day<small>(coming soon)</small></option>
   </select>
 </mat-form-field>
 
@@ -43,7 +49,7 @@
   <ng-template mat-tab-label>
     <span matBadge="{{activeGroupCount>0 ? activeGroupCount : ''}}" matBadgeOverlap="false">Active</span>
   </ng-template>
-    <div *ngFor= "let group of groupDetails ; index as i">
+    <div *ngFor= "let group of activeGroupDetails ; index as i">
       <mat-card class="example-card" *ngIf= "group.status === 'active'">
         <mat-card-header>
 
@@ -66,7 +72,7 @@
         </mat-card-content>
 
         <mat-card-actions>
-          <button mat-raised-button color="warn"  *ngIf = "group.usersInGroup.length > 2" (click) = "startGroup(i)"  data-bs-toggle="modal" data-bs-target="#bankDetailsModal" >Start Group</button>
+          <button mat-raised-button color="warn"  *ngIf = "group.usersInGroup.length > 2" (click) = "startGroup(i, group.g_id)"  data-bs-toggle="modal" data-bs-target="#bankDetailsModal" >Start Group</button>
           <!-- <button mat-raised-button color="warn" data-bs-toggle="modal" data-bs-target="#bankDetailsModal">Start Group</button> -->
           <!-- <button mat-raised-button color="accent" data-bs-toggle="modal" (click) = "setgroupId(group.g_id)" data-bs-target="#addUserModal">Add Users</button> -->
           <button mat-button style="display:initial;" id="bidButton{{i}}"   (click) = "showBidAmountForms(i, group.g_id)">Bid</button>
@@ -75,7 +81,10 @@
         </mat-card-actions>
 
         <mat-card-footer class="cardFooter">
-        <p class="row g-3" style="display:none;" id="subscribe{{i}}">Please subscribe</p>
+
+          <button id="rzp-button1" style="display:none;" id="subscribe{{i}}" (click)="createRzpayOrder(group.g_id)">Pay</button>
+          <p class="row g-3" style="display:none;" id="subscribe{{i}}">Please subscribe</p>
+
 
          <form class="row g-3" style="display:none;" id="showBidAmountForm{{i}}" (ngSubmit)="bidAmount()" #bidForms="ngForm">
           <h4> Bid Form </h4>
@@ -104,17 +113,17 @@
   <ng-template mat-tab-label>
     <span matBadge="{{inactiveGroupCount > 0 ? inactiveGroupCount : ''}}" matBadgeOverlap="false">Inactive</span>
   </ng-template>
-    <div *ngFor= "let group of groupDetails ; index as i">
+    <div *ngFor= "let group of inactiveGroupDetails ; index as i">
 
       <mat-card class="example-card"  *ngIf= "group.status === 'inactive'">
         <mat-card-header >
           <div mat-card-avatar class="example-header-image"></div>
-          <mat-card-title class= "cardTitle" routerLink='/viewGroup/{{group.g_id}}'>{{group.name}} by {{group.admin}} </mat-card-title>
-          <mat-card-subtitle>{{group.duration}}</mat-card-subtitle>
+          <mat-card-title *ngIf="group.name" class= "cardTitle" routerLink='/viewGroup/{{group.g_id}}'>{{group.name}} by {{group.admin}} </mat-card-title>
+          <mat-card-subtitle *ngIf="group.duration">{{group.duration}}</mat-card-subtitle>
           <!-- <mat-card-subtitle>{{group.g_id}}</mat-card-subtitle> -->
-          <mat-card-subtitle>₹{{group.totalAmount}} total</mat-card-subtitle>
-          <mat-card-subtitle>{{group.usersInGroup.length}} members</mat-card-subtitle>
-          <mat-card-subtitle>₹{{group.amount}}/member</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.totalAmount">₹{{group.totalAmount}} total</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.usersInGroup">{{group.usersInGroup.length}} members</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.amount">₹{{group.amount}}/member</mat-card-subtitle>
           <mat-card-subtitle>{{group.minBidAmountUser ? "'" + group.minBidAmountUser  + "'" +  ' highest bid user with bid amount ' : ''}}  {{group.bid_amount ? group.bid_amount : ''}}</mat-card-subtitle>
 
         </mat-card-header>
@@ -124,9 +133,9 @@
         </mat-card-content>
 
         <mat-card-actions>
-          <button mat-raised-button color="warn" *ngIf = "group.usersInGroup.length > 2" data-bs-toggle="modal" data-bs-target="#bankDetailsModal" (click) = "startGroup(i)">Start Group</button>
+          <button mat-raised-button color="warn" *ngIf = "group.usersInGroup.length > 2" data-bs-toggle="modal" data-bs-target="#bankDetailsModal" (click) = "startGroup(i, group.g_id)">Start Group</button>
           <button mat-raised-button color="accent" data-bs-toggle="modal" (click) = "setgroupId(group.g_id)" data-bs-target="#addUserModal">Add Users</button>
-          <button mat-button (click)="deleteGroup(i)">Delete</button>
+          <button mat-button (click)="deleteGroup(i, group.g_id, group.status)">Delete</button>
 
         </mat-card-actions>
 
@@ -143,7 +152,7 @@
   <ng-template mat-tab-label>
     <span matBadge="{{completedGroupCount>0 ? completedGroupCount : ''}}" matBadgeOverlap="false">Completed</span>
   </ng-template>
-    <div *ngFor= "let group of groupDetails ; index as i">
+    <div *ngFor= "let group of completedGroupDetails ; index as i">
       <mat-card class="example-card"  *ngIf= "group.status === 'completed'">
 
         <mat-card-header>
@@ -168,7 +177,7 @@
         </mat-card-actions>
 
         <mat-card-footer>
-         <button mat-button (click)="deleteGroup(i)">Delete</button>
+         <button mat-button (click)="deleteGroup(i, group.g_id, group.status)">Delete</button>
 
         </mat-card-footer>
 
@@ -179,7 +188,7 @@
 
 
 <!-- bankDetailsModal -->
-<div class="modal fade" id="bankDetailsModal" tabindex="-1" *ngIf="showBankDetailsModal" aria-labelledby="bankDetailsModal" aria-hidden="true">
+<div class="modal fade" id="bankDetailsModal" tabindex="-1" *ngIf="showBankDetailsModal" aria-labelledby="bankDetailsModal" data-bs-toggle="modal"  aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -236,7 +245,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)= "onBankDetails()">Save changes</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)= "onBankDetails()">Save changes</button>
       </div>
 
     </div>
@@ -292,7 +301,8 @@
             <button mat-raised-button color="warn" [disabled]="!searchUserForm.form.valid">Search</button>
           </form>
 
-          <table class="table table-striped" *ngIf="userDetails; else invite">
+          <div class = "table-striped table-responsive">
+          <table class="table" *ngIf="userDetails && username.touched; else invite">
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -310,18 +320,27 @@
                 <td>{{userDetails.last_name}}</td>
                 <td>{{userDetails.userName}}</td>
                 <td>{{userDetails.email}}</td>
-                <td> <button type="button" (click) = "addUserToGroup(userDetails)" class="btn btn-info">Add</button> </td>
+                <td> <button type="button" (click)="addUserToGroup(userDetails)" data-bs-dismiss="modal"  class="btn btn-info">Add</button> </td>
               </tr>
 
             </tbody>
           </table>
+
+           </div>
+
+
           <div>
           <ng-template #invite>
-            <p> User with username {{userName.user}} not found!</p> <button>Invite</button>
+            <div *ngIf="username.touched">
+              <br>
+              <p> User with username {{userName.user}} not found!</p>
+            <button type="button" (click)="inviteUserToGroup()" class="btn btn-primary" >Invite</button>
+            </div>
           </ng-template>
           </div>
       </div>
 
     </div>
   </div>
+</div>
 </div>

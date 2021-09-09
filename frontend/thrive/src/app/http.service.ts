@@ -26,11 +26,7 @@ export class HttpService {
 
   }
 
-  getGroups(){
-    return this._http.get("http://127.0.0.1:8000/get/groups")
-  }
-
-  addGroup(groupData:any, username:string|null){
+  getGroups(token:any){
     const formData = new FormData();
     let httpOptions = {
         headers: new HttpHeaders({
@@ -38,12 +34,29 @@ export class HttpService {
         })
     };
 
-    if (groupData !== null &&  username !== null){
+    if (token !== null && token){
+
+      formData.set('token' , token)
+
+    }
+
+    return this._http.post("http://127.0.0.1:8000/get/groups", formData)
+  }
+
+  addGroup(groupData:any, token:any){
+    const formData = new FormData();
+    let httpOptions = {
+        headers: new HttpHeaders({
+            'Content-Type': 'multipart/form-data; charset=UTF-8'
+        })
+    };
+
+    if (groupData !== null &&  token !== null){
 
       formData.set('name' , groupData.name)
       formData.set('duration' , groupData.duration)
       formData.set('amount' , groupData.amount)
-      formData.set('user' , username)
+      formData.set('token' , token)
 
     }
 
@@ -107,7 +120,7 @@ export class HttpService {
 
   }
 
-  startGroup(userName:string |null , groupId:string){
+  startGroup(token:any , groupId:string){
 
     const formData = new FormData();
     let httpOptions = {
@@ -116,10 +129,10 @@ export class HttpService {
         })
     };
 
-    if (userName!== null && userName) {
+    if (token!== null && token) {
 
       formData.set('g_id' , groupId);
-      formData.set('username' , userName);
+      formData.set('token' , token);
 
     }
 
@@ -212,6 +225,49 @@ export class HttpService {
 
 
     return this._http.post("http://127.0.0.1:8000/get/bank_details" , formData)
+
+  }
+
+  getRazorPayOrderId(group_id:string, order_amount:any, token:any){
+
+    const formData = new FormData();
+    console.log("group_id = "  , group_id)
+    let httpOptions = {
+        headers: new HttpHeaders({
+            'Content-Type': 'multipart/form-data; charset=UTF-8'
+        })
+    };
+
+    formData.append('group_id' ,  group_id);
+    formData.append('order_amount' ,  order_amount);
+    formData.append('token' ,  token);
+
+
+
+
+    return this._http.post("http://127.0.0.1:8000/get/razorpay/order_id/" , formData)
+
+  }
+
+  saveRazorPayPaymentDetails(razorpay_payment_id:string, razorpay_order_id:any, razorpay_signature:string, token:any){
+
+    const formData = new FormData();
+    let httpOptions = {
+        headers: new HttpHeaders({
+            'Content-Type': 'multipart/form-data; charset=UTF-8'
+        })
+    };
+
+    formData.append('razorpay_payment_id' ,  razorpay_payment_id);
+    formData.append('razorpay_order_id' ,  razorpay_order_id);
+    formData.append('razorpay_signature' ,  razorpay_signature);
+
+    formData.append('token' ,  token);
+
+
+
+
+    return this._http.post("http://127.0.0.1:8000/get/razorpay/save/" , formData)
 
   }
 }

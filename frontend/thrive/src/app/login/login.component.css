@@ -43,3 +43,8 @@ section {
 .signup{
   cursor: pointer;
 }
+
+
+.shrink{
+  max-width: 70%;
+}
