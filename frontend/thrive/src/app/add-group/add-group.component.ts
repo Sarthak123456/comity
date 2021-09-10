@@ -28,6 +28,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   activeGroupDetails:any = [];
   inactiveGroupDetails:any =[];
   completedGroupDetails:any =[];
+  snackBarRef:any;
   // activeGroupIds:any = [];
   // inactiveGroupIds:any =[];
   // completedGroupIds:any =[];
@@ -125,13 +126,13 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     this._httpService.getGroups(localStorage.getItem("token"))
     .subscribe(
       data => {
-        console.log(data)
+        // console.log(data)
         // this.groupDetails = [];
         // this.groupIds = [];
         this.data = data;
         this.token = localStorage.getItem("token");
         this.loggedInUser = localStorage.getItem("loggedInUser");
-        console.log("loggedInUser in add group " , this.loggedInUser);
+        // console.log("loggedInUser in add group " , this.loggedInUser);
 
       this.data.forEach((element: any, i:number) => {
         element.usersInGroup.forEach((user: string|any) => {
@@ -228,7 +229,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
 
   openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action);
+    this.snackBarRef = this._snackBar.open(message, action, {'duration' : 5000});
   }
 
   addGroup(){
@@ -283,35 +284,43 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     // let id = this.inactiveGroupDetails.find((item: any) => item.index === index);
     console.log("id =" , id);
 
-    this._httpService.deleteGroup(id)
-    .subscribe(
-      data => {
-        console.log('delete = ' , data);
-        if(status == 'inactive'){
-          this.inactiveGroupDetails.splice(index,1);
-          // this.inactiveGroupIds.splice(index,1);
-          this.inactiveGroupCount= this.inactiveGroupDetails.length;
-          this.openSnackBar("Deleted group " + id, "close");
+    this.openSnackBar(`Are you sure you want to delete the group!`, "yes");
 
-        } else if(status == 'completed'){
-          this.completedGroupDetails.splice(index,1);
-          // this.completedGroupIds.splice(index,1);
-          this.completedGroupCount= this.completedGroupDetails.length;
-          this.openSnackBar("Deleted group " + id, "close");
+    this.snackBarRef.afterDismissed().subscribe((action:any) => {
+      // console.log('::::::::::The snack-bar was dismissed', action);
+
+        if(action.dismissedByAction == true){
+          this._httpService.deleteGroup(id)
+          .subscribe(
+            data => {
+              console.log('delete = ' , data);
+              if(status == 'inactive'){
+                this.inactiveGroupDetails.splice(index,1);
+                // this.inactiveGroupIds.splice(index,1);
+                this.inactiveGroupCount= this.inactiveGroupDetails.length;
+                this.openSnackBar("Deleted group " + id, "close");
+
+              } else if(status == 'completed'){
+                this.completedGroupDetails.splice(index,1);
+                // this.completedGroupIds.splice(index,1);
+                this.completedGroupCount= this.completedGroupDetails.length;
+                this.openSnackBar("Deleted group " + id, "close");
+
+              }
+
+              // this.getGroups();
+
+
+          },
+            error => {
+              console.log("error" , error)
+              this.openSnackBar("Error deleting group " + id, "close");
 
         }
-
-        // this.getGroups();
-
-
-    },
-      error => {
-        console.log("error" , error)
-        this.openSnackBar("Error deleting group " + id, "close");
-
-    }
       );
-    console.log("Deleted group " + id );
+      }
+    });
+
 
   }
 

@@ -53,14 +53,19 @@
     <td mat-cell *matCellDef="let element"> {{element.start_comity}} </td>
   </ng-container>
 
+<!-- Symbol Column -->
+   <ng-container matColumnDef="action" *ngIf="showActionColumn">
+    <th mat-header-cell *matHeaderCellDef> Action </th>
+    <td mat-cell *matCellDef="let element;  let i = index" class="delete" (click)="deleteUser(element.name)"><fa-icon [icon]="faTrash"></fa-icon></td>
+  </ng-container>
+
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;  let even = odd;"
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;  let even = odd; let i = index;"
          [ngClass]="{gray: even}"></tr>
 </table>
 
 <br>
 </div>
-
 <!-- <table class="table table-striped">
   <thead>
     <tr>

@@ -322,8 +322,8 @@ def viewUsersInGroup(request):
     data = []
     if request.method == "POST":
         g_id = request.POST.get("g_id")
-        group = group_info_table.objects.get(id=g_id)
-        print("addusrss" , group , g_id)
+        grp = group_info_table.objects.get(id=g_id)
+        # print("addusrss" , group , g_id)
 
         # list_of_input_ids = request.POST.getlist('inputs')
         # if (list_of_input_ids):
@@ -331,17 +331,18 @@ def viewUsersInGroup(request):
         #         user = User.objects.get(id=ids)
         #         g_id = group
         #         u_id = user
-        groups = group_table.objects.filter(g_id=group).select_related()
+        groups = group_table.objects.filter(g_id=grp).select_related()
 
         for group in groups:
-            print("bid_amount", group.bidAmount)
+            # print("bid_amount", group.bidAmount)
             data.append(
                 {
                     "name": group.u_id.username,
                     "winner": group.winner,
                     "start_comity": group.start_comity,
                     "round": group.round,
-                    "bid_amount": group.bidAmount
+                    "bid_amount": group.bidAmount,
+                    "status": grp.status
                 }
             )
 
@@ -353,6 +354,53 @@ def viewUsersInGroup(request):
         return JsonResponse(data, safe=False)
 
     return HttpResponse('Failed')
+
+
+def deleteUsersInGroup(request):
+    # data = []
+    if request.method == "POST":
+        try:
+            g_id = request.POST.get("g_id")
+            username = request.POST.get("username")
+
+            group = group_info_table.objects.get(id=g_id)
+            u_id = User.objects.get(username=username)
+
+
+            # list_of_input_ids = request.POST.getlist('inputs')
+            # if (list_of_input_ids):
+            #     for ids in list_of_input_ids:
+            #         user = User.objects.get(id=ids)
+            #         g_id = group
+            #         u_id = user
+            # group_table.objects.get(g_id=group, u_id=username)
+            group_table.objects.get(g_id=group, u_id=u_id).delete()
+        # groups = group_table.objects.filter(g_id=group)
+
+        # print("del_user = " , groups , g_id, username)
+
+        #
+        # for group in groups:
+        #     print("group", group)
+        #     data.append(
+        #         {
+        #             "name": group.u_id.username,
+        #             "winner": group.winner,
+        #             "start_comity": group.start_comity,
+        #             "round": group.round,
+        #             "bid_amount": group.bidAmount
+        #         }
+        #     )
+
+        # qs_json = serializers.serialize('json', group)
+
+        # To send the entire list as json
+        # return HttpResponse(qs_json, content_type='application/json')
+
+            return JsonResponse({"delete" : "success"}, safe=False)
+
+        except:
+            return JsonResponse({"delete" : "failed"}, safe=False)
 
 
 def getUser(request):

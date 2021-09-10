@@ -270,4 +270,16 @@ export class HttpService {
     return this._http.post("http://127.0.0.1:8000/get/razorpay/save/" , formData)
 
   }
+
+  deleteUser(userName:any, groupId:any){
+    const formData = new FormData();
+
+    formData.append('username' ,  userName);
+    formData.append('g_id' ,  groupId);
+    console.log(userName , groupId);
+
+    return this._http.post("http://127.0.0.1:8000/delete/group/user/" , formData)
+
+
+  }
 }

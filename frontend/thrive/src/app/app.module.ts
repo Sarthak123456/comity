@@ -31,6 +31,8 @@ import { ViewGroupComponent } from './view-group/view-group.component';
 import { ViewPaymentDetailsComponent } from './view-payment-details/view-payment-details.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 
 @NgModule({
   declarations: [
@@ -58,7 +60,8 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
     HttpClientModule,
     MatBadgeModule,
-    MatTableModule
+    MatTableModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

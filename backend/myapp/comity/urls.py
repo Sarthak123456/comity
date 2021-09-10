@@ -12,8 +12,8 @@ urlpatterns = [
     path('login', csrf_exempt(views.loginUser)),
     path('logout', csrf_exempt(views.logoutUser)),
     path('signup', csrf_exempt(views.signUpUser)),
-    path('activate_subscription', csrf_exempt(views.activateSubscription)),
-    path('deactivate_subscription', csrf_exempt(views.deactivateSubscription)),
+    path('act_sub', csrf_exempt(views.activateSubscription)),
+    path('deact_sub', csrf_exempt(views.deactivateSubscription)),
     path('bank_details', csrf_exempt(views.saveBankDetails)),
     path('get/bank_details', csrf_exempt(views.getBankDetails)),
     path('addGroup', csrf_exempt(views.addGroup)),
@@ -31,6 +31,7 @@ urlpatterns = [
     path('delete/group/<str:id>', csrf_exempt(views.deleteGroup)),
     path('get/user/', csrf_exempt(views.getUser)),
     path('get/group/users/', csrf_exempt(views.viewUsersInGroup)),
+    path('delete/group/user/', csrf_exempt(views.deleteUsersInGroup)),
     path('get/razorpay/order_id/', csrf_exempt(views.createRazorPayOrderId)),
     path('get/razorpay/save/', csrf_exempt(views.verifyAndSavePayment)),
 
