@@ -54,20 +54,24 @@
         <mat-card-header>
 
           <div mat-card-avatar class="example-header-image"></div>
-          <mat-card-title class= "cardTitle" routerLink='/viewGroup/{{group.g_id}}'>{{group.name}} created by {{group.admin}} </mat-card-title>
+          <mat-card-title class= "cardTitle" routerLink='/viewGroup/{{group.g_id}}'>{{group.name}} </mat-card-title>
           <mat-card-subtitle>{{group.duration}}</mat-card-subtitle>
           <!-- <mat-card-subtitle>{{group.g_id}}</mat-card-subtitle> -->
-          <mat-card-subtitle>{{formatter.format(group.totalAmount).split('.')[0]}} total</mat-card-subtitle>
+          <!-- <mat-card-subtitle>{{formatter.format(group.totalAmount).split('.')[0]}} total</mat-card-subtitle>
           <mat-card-subtitle>{{group.usersInGroup.length}} members</mat-card-subtitle>
           <mat-card-subtitle>{{formatter.format(group.amount).split('.')[0]}}/member</mat-card-subtitle>
           <mat-card-subtitle *ngIf="group.updated_date">updated at: {{group.updated_date}} , {{group.updated_time}} </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="group.end_date">end date: {{group.end_date}}</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.end_date">end date: {{group.end_date}}</mat-card-subtitle> -->
           <mat-card-subtitle *ngIf="group.dateAfterOneDays_date"> Bid open till: {{group.dateAfterOneDays_date}}  </mat-card-subtitle>
           <mat-card-subtitle *ngIf="group.minBidAmountUser">{{group.minBidAmountUser ? "'" + group.minBidAmountUser  + "'" +  ' highest bid user with bid amount ' : ''}} {{formatter.format(group.bid_amount).split('.')[0] ? group.bid_amount : ''}} for round {{group.round}} </mat-card-subtitle>
 
         </mat-card-header>
 
         <mat-card-content>
+        <p> <strong> {{group.name}} </strong> created by <strong> {{group.admin}} </strong> for<strong>  {{formatter.format(group.totalAmount).split('.')[0]}}</strong>  total amount with
+        total <strong> {{group.usersInGroup.length}}</strong>  members splitting <strong> {{formatter.format(group.amount).split('.')[0]}}/member/month </strong> ending on <strong> {{group.end_date}}.</strong>
+
+        </p>
 
         </mat-card-content>
 
@@ -75,15 +79,16 @@
           <button mat-raised-button color="warn"  *ngIf = "group.usersInGroup.length > 2" (click) = "startGroup(i, group.g_id)"  data-bs-toggle="modal" data-bs-target="#bankDetailsModal" >Start Group</button>
           <!-- <button mat-raised-button color="warn" data-bs-toggle="modal" data-bs-target="#bankDetailsModal">Start Group</button> -->
           <!-- <button mat-raised-button color="accent" data-bs-toggle="modal" (click) = "setgroupId(group.g_id)" data-bs-target="#addUserModal">Add Users</button> -->
-          <button mat-button style="display:initial;" id="bidButton{{i}}"   (click) = "showBidAmountForms(i, group.g_id)">Bid</button>
-          <button mat-button *ngIf="userDetails.winner == true" routerLink="/{{userDetails.name}}/bank_details">Tranfer</button>
+          <button mat-button style="display:none;" id="bidButton{{i}}"   (click) = "showBidAmountForms(i, group.g_id)">Bid</button>
+          <button mat-button id="transfer{{i}}" style="display:none;"  routerLink="/{{group.winner}}/bank_details">Tranfer</button>
           <!--  <button mat-button (click)="deleteGroup(i)">Delete</button> -->
         </mat-card-actions>
 
-        <mat-card-footer class="cardFooter">
-
-          <button id="rzp-button1" style="display:none;" id="subscribe{{i}}" (click)="createRzpayOrder(group.g_id)">Pay</button>
-          <p class="row g-3" style="display:none;" id="subscribe{{i}}">Please subscribe</p>
+        <mat-card-footer class="cardFooter row g-3">
+          <div id="subscribe{{i}}" style="display:none;">
+            <p>Please subscribe!</p>
+            <button id="rzp-button1" class="btn btn-primary" (click)="createRzpayOrder(group.g_id)">Pay</button>
+          </div>
 
 
          <form class="row g-3" style="display:none;" id="showBidAmountForm{{i}}" (ngSubmit)="bidAmount()" #bidForms="ngForm">
@@ -302,7 +307,7 @@
           </form>
 
           <div class = "table-striped table-responsive">
-          <table class="table" *ngIf="userDetails && username.touched; else invite">
+          <table class="table" *ngIf="userDetails && username.touched && !showUserNotFoundError; else invite">
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -331,7 +336,7 @@
 
           <div>
           <ng-template #invite>
-            <div *ngIf="username.touched">
+            <div *ngIf="showUserNotFoundError">
               <br>
               <p> User with username {{userName.user}} not found!</p>
             <button type="button" (click)="inviteUserToGroup()" class="btn btn-primary" >Invite</button>

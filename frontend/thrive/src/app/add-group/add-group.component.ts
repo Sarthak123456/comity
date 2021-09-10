@@ -1,4 +1,4 @@
-import { Component, OnInit,OnChanges, SimpleChanges, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, OnDestroy} from '@angular/core';
+import { Component, OnInit,OnChanges, SimpleChanges,  ElementRef, ViewChild, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, OnDestroy} from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import { HttpService } from '../http.service';
 import { AddGroup } from '../add-group';
@@ -6,6 +6,7 @@ import { Username } from '../username';
 import { BankDetails } from '../bank-details';
 import { Bidform } from '../bid-form';
 import { WindowRefService } from '../window-ref.service';
+import { ITS_JUST_ANGULAR } from '@angular/core/src/r3_symbols';
 
 
 @Component({
@@ -14,7 +15,7 @@ import { WindowRefService } from '../window-ref.service';
   styleUrls: ['./add-group.component.css']
 })
 export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, OnDestroy {
-  // @ViewChild('staticBackdrop') staticBackdrop:ElementRef;
+  // @ViewChild('transfer1') myDiv!: ElementRef;
 
   // groupDetails: any = [];
   // groupIds:any = [];
@@ -22,16 +23,10 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
 
   newGroup = new AddGroup('Test Group' , '1m' , 1000);
-  // activeGroupId:string ='';
-  // inactiveGroupId:string ='';
-  // completedGroupId:string ='';
   activeGroupDetails:any = [];
   inactiveGroupDetails:any =[];
   completedGroupDetails:any =[];
   snackBarRef:any;
-  // activeGroupIds:any = [];
-  // inactiveGroupIds:any =[];
-  // completedGroupIds:any =[];
   activeGroupCount:number = 0;
   inactiveGroupCount:number = 0;
   completedGroupCount:number = 0;
@@ -40,6 +35,9 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   userDetails:any = '';
   showBankDetailsModal:boolean = true;
   showBidForm = false;
+  showBidButton = false;
+  showTransferButton = false;
+  showUserNotFoundError = false;
   loggedInUser:any = '';
   token:any = '';
   data:any;
@@ -77,24 +75,75 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
   ngAfterContentInit(){
     // console.log("Called ngAfterContentInit");
+    // this.activeGroupDetails.forEach((element: any, i:number) => {
+    //   const today = new Date();
+    //   const bidEndDate = new Date(element.bidEndDate);
+
+    //   if(today <= bidEndDate){
+    //     // console.log("today = " , today);
+    //     // console.log("bidEndDate = " , bidEndDate);
+    //     var y = document.getElementById('bidButton' + i );
+    //     console.log("bidButton=" , y);
+    //     // console.log("loggedInUser = " ,  localStorage.getItem("loggedInUser"));
+
+    //     if(y && y.style.display !== "none"){
+    //       if(element.minBidAmountUser ===  localStorage.getItem("loggedInUser")){
+    //         if(y){
+    //           y.style.display = "initial";
+    //         }
+    //       }
+
+    //     }
+
+    //   }
+    // });
 
 
   }
 
   ngAfterContentChecked():void {
-    this.activeGroupDetails.forEach((element: any, i:number) => {
-      var y = document.getElementById('bidButton' + i );
-      if(y && y.style.display !== "none"){
-        if(element.minBidAmountUser ===  localStorage.getItem("loggedInUser")){
-          if(y){
-            y.style.display = "none";
-          }
-        }
+    // console.log("Called ngAfterContentChecked");
 
-      }
-    });
   }
+//   DOMready() {
+//     if (document.getElementById('bidButton1')) {
+//       let testPosition:any =  document.getElementById('bidButton1');
+//       console.log("testPosition in DOM = " , testPosition);
+//       if(testPosition){
+//         // this.activeGroupDetails.forEach((element: any, i:number) => {
+//         //   const today = new Date();
+//         //   const bidEndDate = new Date(element.bidEndDate);
+//         //   var y = document.getElementById('bidButton' + i );
+//         //   console.log("bidButton=" , y);
 
+//         //   if(today <= bidEndDate){
+//         //     // console.log("today = " , today);
+//         //     // console.log("bidEndDate = " , bidEndDate);
+//         //     var y = document.getElementById('bidButton' + i );
+//         //     console.log("bidButton=" , y);
+//         //     // console.log("loggedInUser = " ,  localStorage.getItem("loggedInUser"));
+
+//         //     if(y && y.style.display !== "none"){
+//         //       if(element.minBidAmountUser ===  localStorage.getItem("loggedInUser")){
+//         //         if(y){
+//         //           y.style.display = "initial";
+//         //         }
+//         //       }
+
+//         //     }
+
+//         //   }
+//         // });
+
+//       }
+//       // for (let i = 0; i < testPosition.length; i++) {
+//       // console.log("testPosition in DOM = :" , testPosition[i]);
+//       // }
+//   }else {
+//      setTimeout(this.DOMready, 2000)
+//  }
+
+// }
   ngAfterViewInit(){
   // this.groupDetails = [];
   // this.groupIds = [];
@@ -105,10 +154,48 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   // this.inactiveGroupIds =[];
   // this.completedGroupIds =[];
   // this.getGroups();
-  //   console.log("Called ngAfterViewInit");
+    console.log("Called ngAfterViewInit");
+
+    // console.log("transfer1 = " , y);
+    // this.DOMready();
+    // console.log("this.activeGroupDetails = " , this.activeGroupDetails);
+
+    window.onload = () =>  {
+      console.log("Window loaded");
+      //your magic here
+      this.setBidAndTransferButton();
+
+    }
   }
   ngAfterViewChecked(){
     // console.log("Called ngAfterViewChecked");
+    // this.activeGroupDetails.forEach((element: any, i:number) => {
+    //   const today = new Date();
+    //   const bidEndDate = new Date(element.bidEndDate);
+    //   var y = document.getElementById('bidButton' + i );
+    //   console.log("bidButton=" , y);
+
+    //   if(today < bidEndDate){
+    //     // console.log("today = " , today);
+    //     // console.log("bidEndDate = " , bidEndDate);
+    //     var y = document.getElementById('bidButton' + i );
+    //     console.log("bidButton=" , y);
+    //     // console.log("loggedInUser = " ,  localStorage.getItem("loggedInUser"));
+
+    //     if(y && y.style.display !== "none"){
+    //       if(element.minBidAmountUser ===  localStorage.getItem("loggedInUser")){
+    //         if(y){
+    //           y.style.display = "initial";
+    //         }
+    //       }
+
+    //     }
+
+    //   }
+    // });
+    this.setBidAndTransferButton();
+
+
   }
 
   ngOnDestroy(){
@@ -116,6 +203,52 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
   }
 
+  setBidAndTransferButton(){
+
+    this.activeGroupDetails.forEach((element: any, i:number) => {
+      const today = new Date();
+      const bidEndDate = new Date(element.bidEndDate);
+      // var y = document.getElementById('bidButton' + i );
+      // console.log("bidButton=" , today , bidEndDate);
+
+      if(today <= bidEndDate){
+        // console.log("today = " , today);
+        // console.log("bidEndDate = " , bidEndDate);
+        var y = document.getElementById('bidButton' + i );
+        // console.log("bidButton=" , y);
+        // console.log("loggedInUser = " ,  localStorage.getItem("loggedInUser"));
+
+        if(y){
+          // console.log("element  ="  , element );
+
+            if(y){
+              y.style.display = "initial";
+              this.showTransferButton = true;
+            }
+
+
+        }
+
+      }  else if(today > bidEndDate){
+
+       const y = document.getElementById('transfer' + i );
+        // console.log("loggedInUser = " ,  localStorage.getItem("loggedInUser"));
+
+        if(y){
+          // console.log("element  ="  , element );
+
+            if(y){
+              y.style.display = "initial";
+              this.showBidButton = true;
+            }
+
+
+      }
+    }
+
+  });
+
+  }
 
   setgroupId(id:string){
     this.groupId = id;
@@ -132,22 +265,43 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
         this.data = data;
         this.token = localStorage.getItem("token");
         this.loggedInUser = localStorage.getItem("loggedInUser");
-        // console.log("loggedInUser in add group " , this.loggedInUser);
+        console.log("data" , data);
 
       this.data.forEach((element: any, i:number) => {
         element.usersInGroup.forEach((user: string|any) => {
           if(user.username === this.loggedInUser){
 
-            if(user.superuser === true ){
+            if(user.superuser === true){
             this.showBidForm = true;
             }
             // console.log("Users in group " , element.g_id , user.name);
-
             // console.log("get group element = " , element, this.loggedInUser)
             if (element.status === 'active'){
               // this.activeGroupIds.push(element.g_id);
               this.activeGroupDetails.push(element);
               this.activeGroupCount ++;
+
+              // console.log("bidEndDate = " , element.bidEndDate);
+              // const today = new Date();
+              // const bidEndDate = new Date(element.bidEndDate);
+
+              // if(today <= bidEndDate){
+              //   console.log("today = " , today);
+              //   console.log("bidEndDate = " , bidEndDate);
+              //   var y = document.getElementById('bidButton' + i );
+              //   console.log(y);
+              //   console.log("loggedInUser = " ,  localStorage.getItem("loggedInUser"));
+
+              //   if(y && y.style.display !== "none"){
+              //     if(element.minBidAmountUser ===  localStorage.getItem("loggedInUser")){
+              //       if(y){
+              //         y.style.display = "initial";
+              //       }
+              //     }
+
+              //   }
+
+              // }
 
 
              } else if(element.status === 'inactive'){
@@ -199,10 +353,9 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
   showBidAmountForms(i:any, g_id:string){
     this.setgroupId(g_id);
+    // console.log("this.activeGroupDetails = " , this.activeGroupDetails);
     var x = document.getElementById('showBidAmountForm' + i);
     var y = document.getElementById('subscribe' + i );
-    console.log("activeGroupDetails = " , this.activeGroupDetails)
-
     // this.getGroups();
 
     if(this.showBidForm){
@@ -329,13 +482,19 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     this._httpService.getUsername(this.userName)
     .subscribe(
       data => {
+        // console.log(data);
         this.userDetails = data;
+        console.log(this.userDetails);
+
+        if(this.userDetails.message === 'user not found'){
+          this.showUserNotFoundError = true;
+        } else{
+          this.showUserNotFoundError = false;
+        }
 
     },
       error => {
         console.log("error" , error);
-        this.openSnackBar(`User with username {this.userName.user} not found` , "close");
-
     }
       );
 
@@ -345,20 +504,20 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     this._httpService.addUserToGroup(userDetails.userName , this.groupId)
     .subscribe(
       data => {
-        // console.log("Added to group" ,  this.groupId);
-        let idx = -1;
+        console.log("Added to group" ,  data);
+        // let idx = -1;
 
         let newItem= this.inactiveGroupDetails.find((item:any, i:any) => {
           // console.log("inactiveGroupDetails = " , item)
           // console.log("inactiveGroupDetails = " , item.g_id )
           // console.log("groupId = " , this.groupId);
           if(item.g_id == this.groupId){
-            idx = i;
+            // idx = i;
             return item;
           }
         });
 
-        let index = idx;
+        // let index = idx;
 
         // console.log("newItem.g_id = " , newItem.g_id);
         // console.log("index = " , index);
@@ -369,6 +528,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
         if(userDetails.userName  !== this.loggedInUser){
           newItem.usersInGroup.push(userDetails);
         }
+        this.userName = new Username('');
         // this.inactiveGroupIds.push(newItem.g_id);
 
         // Remove from the array
@@ -394,7 +554,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   startGroup(index:number, groupId:any){
     let g_id = groupId
     // console.log("groupId = " , groupId);
-    console.log("g_id = " , g_id);
+    // console.log("g_id = " , g_id);
     let pendingUsers:string[] = [];
     if(this.showBankDetailsModal){
       this.openSnackBar("Please fill Bank Details", "close");
@@ -443,6 +603,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
           }
           this.openSnackBar(this.userDetails.name +" winner for round " + this.userDetails.round , "close");
+
 
         } else{
           Object.values(data).forEach(user => {pendingUsers.push(user.name)})

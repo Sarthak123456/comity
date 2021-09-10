@@ -7,6 +7,7 @@ import uuid
 # from time import time
 import datetime
 import razorpay
+import os
 import json
 from random import randint
 import logging
@@ -412,7 +413,6 @@ def getUser(request):
             return HttpResponse('Failed')
 
         if user:
-            print(user)
             return JsonResponse(
                                 {'userName': str(user[0].username),
                                 'first_name': str(user[0].first_name),
@@ -420,11 +420,12 @@ def getUser(request):
                                 'user_id': str(user[0].id),
                                 'email': str(user[0].email)}
                             )
-    return HttpResponse('Failed')
+    return JsonResponse({'message' : 'user not found'}, safe=False)
 
 def getAllGroups(request):
     if request.method == 'POST':
         data = []
+        # Just to check the token, don't delete
         user = User.objects.get(username=decryptToken(request.POST.get('token')))
         groups = group_info_table.objects.select_related().all()
 
@@ -436,6 +437,11 @@ def getAllGroups(request):
             totalAmount = int(len(usersInGroup)) * int(currentGroup.amount)
             minBidAmount = totalAmount / 100
             allWinners = group_table.objects.filter(g_id=id, winner=True)
+            if currentGroup.status == 'active':
+                winner = group_table.objects.select_related().get(g_id=id, winner=True, round=len(allWinners)) if len(allWinners)-1 == 0 else group_table.objects.select_related().get(g_id=id, winner=True, round=len(allWinners)-1),
+                print('winner = ' , winner[0])
+                # data.append({"winner": winner[0].u_id.username})
+                # print('round = ' , len(allWinners))
             user_id = currentGroup.created_by_user.id
             # user_details = User.objects.get(id = user_id)
             # profile_details = Profile.objects.all()
@@ -475,8 +481,9 @@ def getAllGroups(request):
                     "totalAmount": totalAmount,
                     "usersInGroup": users,
                     "minBidAmount": minBidAmount,
-                    "dateAfterOneDays_date": convertMilisToDatetime(currentGroup.bid_date).date() if currentGroup.bid_date else None,
-                    "dateAfterOneDays_time": dateAfterOneDays.time(),
+                    # "dateAfterOneDays_date": convertMilisToDatetime(currentGroup.bid_date).date() if currentGroup.bid_date else None,
+                    # "dateAfterOneDays_time": dateAfterOneDays.time(),
+                    "bidEndDate": dateAfterOneDays.date(),
                     "admin" : currentGroup.created_by_user.username,
                     "name" : currentGroup.name,
                     "duration" : currentGroup.duration,
@@ -484,7 +491,8 @@ def getAllGroups(request):
                     "g_id" : currentGroup.id,
                     "status" : currentGroup.status,
                     "end_date" : convertMilisToDatetime(currentGroup.end_date).date() if currentGroup.end_date else None,
-                    "round" : len(allWinners)
+                    "round" : len(allWinners),
+                    "winner": winner[0].u_id.username if winner else None
 
                 }
             )
@@ -656,59 +664,20 @@ def sendNotficationToStartComity(request):
             logger.info("Getting winner at start")
             winner = startGroup(request, winner, logger, id, False)
             print("Winner" , winner)
-            return JsonResponse({"winner" : winner.u_id.username}, safe=False)
+            data = {
+                "name": winner.u_id.username,
+                "winner": winner.winner,
+                "start_comity": winner.start_comity,
+                "round": winner.round,
+                "bid_amount": winner.bidAmount
+            }
+            return JsonResponse(data, safe=False)
+            # return JsonResponse({"winner" : winner.u_id.username}, safe=False)
             # return redirect('/get/{}/winner/{}/{}'.format(id, winner, False))
-
-
-    # Logic when group ends 
-    # elif (getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(group.end_date).date()):
-    # # elif(getCurrentDateInLocalTimezone().date() == getCurrentDateInLocalTimezone().date()):
-    #
-    #
-    #     logger.debug("allWinners = %s", allWinners)
-    #     bid.objects.filter(g_id=id).delete()
-    #     winner = bid.objects.select_related().filter(g_id=id, bidAmount__gt=0).order_by('bidAmount').last()
-    #
-    #
-    #
-    #     # import pdb;
-    #     # pdb.set_trace()
-    #     winner = startGroup(request, winner, logger, id, False)
-    #
-    #     data = {
-    #         "name": winner.u_id.username,
-    #         "winner" : winner.winner,
-    #         "start_comity": winner.start_comity,
-    #         "round": winner.round,
-    #         "bid_amount": winner.bidAmount
-    #     }
-    #     print("end date winner" , data)
-    #
-    #     logger.debug("Logic when group ends %s", winner)
-    #     setGroupEndDate(group)
-    #
-    #
-    #     # qs_json = serializers.serialize('json', lastWinner)
-    #     return JsonResponse(data, safe=False)
-
-        # return redirect('/get/{}/winner/{}/{}'.format(id, winner, False))
 
 
     # In last round select the remaining user 
     elif (len(allWinners) == len(group_table.objects.filter(g_id=group))):
-
-        # if (getCurrentDateInLocalTimezone().date() >= convertMilisToDatetime(group.end_date).date()):
-        # # if(getCurrentDateInLocalTimezone().date() >= getCurrentDateInLocalTimezone().date()):
-        #
-        #     group.status = 'completed'
-        #     group.save()
-        #
-        #     messages.success(request, "Finish")
-        #     logger.debug("Finish")
-        #     return JsonResponse({"finished": group.status}, safe=False)
-        #     # return redirect('/get/{}'.format(id))
-
-        # else:
             round = len(allWinners)
             winnerLeft = group_table.objects.get(g_id=id, winner=True, round=int(round))
             winner = winnerLeft
@@ -731,19 +700,19 @@ def sendNotficationToStartComity(request):
 
     # Logic for 2nd to n-1 rounds
     elif (len(allWinners) != len(group_table.objects.filter(g_id=group))):
+        count = 0
         logger.info("Getting winner for 2nd to n-1 rounds")
+        print('Getting winner for 2nd to n-1 rounds = ' ,  count)
+        count += count + 1
         round = len(allWinners)
-        logger.debug("allWinners = %s", allWinners)
-        logger.debug("round = %s", round)
         finish = False
         lastWinner = ''
-        messages.warning(request, "Round = {}".format(round))
 
         if round > 0:
-            lastWinner = group_table.objects.get(g_id=id, winner=True, round=int(round))
-            logger.debug("lastWinner = %s", lastWinner)
-            lastWinnerUser = User.objects.get(username=lastWinner)
-            logger.debug("lastWinnerUser for %s round = %s", round, lastWinnerUser)
+            lastWinner = group_table.objects.select_related().get(g_id=id, winner=True, round=int(round))
+            # logger.debug("lastWinner = %s", lastWinner)
+            # lastWinnerUser = User.objects.get(username=lastWinner)
+            # logger.debug("lastWinnerUser for %s round = %s", round, lastWinnerUser)
             data={
                     "name": lastWinner.u_id.username,
                     "winner": lastWinner.winner,
@@ -853,22 +822,47 @@ def getUsersWithPendingInvitations(groupId):
 
 def getLogger():
     # create logger
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    LOG_FILENAME = os.path.join(BASE_DIR, "mylog.log")
     logger = logging.getLogger('Thrive')
-    logger.setLevel(logging.DEBUG)
-
-    # create console handler and set level to debug
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
+    if logger.handlers:
+        logger.handlers = []
 
     # create formatter
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
+    # create console handler and set level to debug
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+
     # add formatter to ch
     ch.setFormatter(formatter)
 
+    # create file handler and set level to debug
+    fh = logging.FileHandler(LOG_FILENAME)
+
+    # add formatter to fh
+    fh.setLevel(logging.INFO)
+    fh.setFormatter(formatter)
+
     # add ch to logger
     logger.addHandler(ch)
+    logger.addHandler(fh)
     return logger
+    # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # LOG_FILENAME = os.path.join(BASE_DIR, "mylog.log")
+    # FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    # logger = logging.getLogger("Thrive")
+    # logger.setLevel(logging.INFO)
+    # # Reset the logger.handlers if it already exists.
+    # if logger.handlers:
+    #     logger.handlers = []
+    # fh = logging.FileHandler(LOG_FILENAME)
+    # formatter = logging.Formatter(FORMAT)
+    # fh.setFormatter(formatter)
+    # logger.addHandler(fh)
+    # return logger
 
 
 def getRandom(id, request, logger):
