@@ -40,7 +40,7 @@ export class HttpService {
 
     }
 
-    return this._http.post(this.base_url+'get/groups', formData)
+    return this._http.post(this.base_url+'/get/groups', formData)
   }
 
   addGroup(groupData:any, token:any){
@@ -72,7 +72,7 @@ export class HttpService {
 
   deleteGroup(id:string){
 
-    return this._http.delete(this.base_url+"delete/group/"+id)
+    return this._http.delete(this.base_url+"/delete/group/"+id)
 
   }
 
@@ -87,7 +87,7 @@ export class HttpService {
 
     formData.set('user' , userName.user);
 
-    return this._http.post(this.base_url+"get/user/" , formData)
+    return this._http.post(this.base_url+"/get/user/" , formData)
   }
 
   addUserToGroup(userName:any, groupId:string){
