@@ -10,12 +10,12 @@
 <form class="example-form" (ngSubmit)="addGroup()" #heroForm="ngForm">
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Name</mat-label>
-    <input matInput placeholder="Name of the Group" name="nameOfGroup" #nameOfGroup="ngModel" [(ngModel)] = "newGroup.name" required>
+    <input matInput placeholder="Name of the group" name="nameOfGroup" #nameOfGroup="ngModel" [(ngModel)] = "newGroup.name" required>
 
-    <mat-hint>Errors appear instantly!</mat-hint>
+    <mat-hint>Name of the group</mat-hint>
 
     <mat-error *ngIf="nameOfGroup.invalid && nameOfGroup.touched">
-      nameOfGroup is <strong>required</strong>
+      Name of the group is <strong>required</strong>
     </mat-error>
   </mat-form-field>
 
@@ -31,15 +31,15 @@
 
  <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Amount</mat-label>
-    <input matInput placeholder="Amount of the Group" type="number" name="amountOfGroup" #amountOfGroup="ngModel" [(ngModel)] = "newGroup.amount" required>
-    <mat-hint>Errors appear instantly!</mat-hint>
+    <input matInput placeholder="Amount individual user has to pay" type="number" name="amountOfGroup" #amountOfGroup="ngModel" [(ngModel)] = "newGroup.amount" required>
+    <mat-hint>Amount individual user has to pay.</mat-hint>
     <mat-error *ngIf="amountOfGroup.invalid && amountOfGroup.touched">
-      amountOfGroup is <strong>required</strong>
+      Amount of the group is <strong>required</strong>
     </mat-error>
 
   </mat-form-field>
 
-<button mat-raised-button color="accent" [disabled]="!heroForm.form.valid">Add Group</button>
+<button mat-raised-button class='bg-custom' [disabled]="!heroForm.form.valid">Add Group</button>
 </form>
 <br>
 
@@ -55,51 +55,53 @@
 
           <div mat-card-avatar class="example-header-image"></div>
           <mat-card-title class= "cardTitle" routerLink='/viewGroup/{{group.g_id}}'>{{group.name}} </mat-card-title>
-          <mat-card-subtitle>{{group.duration}}</mat-card-subtitle>
+          <!-- {% comment %} <mat-card-subtitle>{{group.duration}}</mat-card-subtitle> {% endcomment %} -->
+          <mat-card-subtitle>1 Month</mat-card-subtitle>
           <!-- <mat-card-subtitle>{{group.g_id}}</mat-card-subtitle> -->
-          <!-- <mat-card-subtitle>{{formatter.format(group.totalAmount).split('.')[0]}} total</mat-card-subtitle>
+          <mat-card-subtitle>{{formatter.format(group.totalAmount).split('.')[0]}} total</mat-card-subtitle>
           <mat-card-subtitle>{{group.usersInGroup.length}} members</mat-card-subtitle>
           <mat-card-subtitle>{{formatter.format(group.amount).split('.')[0]}}/member</mat-card-subtitle>
           <mat-card-subtitle *ngIf="group.updated_date">updated at: {{group.updated_date}} , {{group.updated_time}} </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="group.end_date">end date: {{group.end_date}}</mat-card-subtitle> -->
-          <mat-card-subtitle *ngIf="group.dateAfterOneDays_date"> Bid open till: {{group.dateAfterOneDays_date}}  </mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.end_date">end date: {{group.end_date}}</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.bidEndDate"> Bid open till: {{group.bidEndDate}}  </mat-card-subtitle>
           <mat-card-subtitle *ngIf="group.minBidAmountUser">{{group.minBidAmountUser ? "'" + group.minBidAmountUser  + "'" +  ' highest bid user with bid amount ' : ''}} {{formatter.format(group.bid_amount).split('.')[0] ? group.bid_amount : ''}} for round {{group.round}} </mat-card-subtitle>
 
         </mat-card-header>
 
         <mat-card-content>
         <p> <strong> {{group.name}} </strong> created by <strong> {{group.admin}} </strong> for<strong>  {{formatter.format(group.totalAmount).split('.')[0]}}</strong>  total amount with
-        total <strong> {{group.usersInGroup.length}}</strong>  members splitting <strong> {{formatter.format(group.amount).split('.')[0]}}/member/month </strong> ending on <strong> {{group.end_date}}.</strong>
+        <strong> {{group.usersInGroup.length}}</strong>  members splitting <strong> {{formatter.format(group.amount).split('.')[0]}}/member/month </strong> ending on <strong> {{group.end_date}}.</strong>
 
         </p>
 
         </mat-card-content>
 
         <mat-card-actions>
-          <button mat-raised-button color="warn"  *ngIf = "group.usersInGroup.length > 2" (click) = "startGroup(i, group.g_id)"  data-bs-toggle="modal" data-bs-target="#bankDetailsModal" >Start Group</button>
+          <button mat-raised-button class='bg-custom' *ngIf = "group.usersInGroup.length > 2" (click) = "startGroup(i, group.g_id)"  data-bs-toggle="modal" data-bs-target="#bankDetailsModal" >Start Group</button>
           <!-- <button mat-raised-button color="warn" data-bs-toggle="modal" data-bs-target="#bankDetailsModal">Start Group</button> -->
           <!-- <button mat-raised-button color="accent" data-bs-toggle="modal" (click) = "setgroupId(group.g_id)" data-bs-target="#addUserModal">Add Users</button> -->
           <button mat-button style="display:none;" id="bidButton{{i}}"   (click) = "showBidAmountForms(i, group.g_id)">Bid</button>
-          <button mat-button id="transfer{{i}}" style="display:none;"  routerLink="/{{group.winner}}/bank_details">Tranfer</button>
+          <button mat-button id="transfer{{i}}" style="display:none;"  routerLink="/{{group.bid_amount - group.winner}}/bank_details">Tranfer {{group.bid_amount}} to {{group.winner}}</button>
           <!--  <button mat-button (click)="deleteGroup(i)">Delete</button> -->
         </mat-card-actions>
 
         <mat-card-footer class="cardFooter row g-3">
           <div id="subscribe{{i}}" style="display:none;">
             <p>Please subscribe!</p>
-            <button id="rzp-button1" class="btn btn-primary" (click)="createRzpayOrder(group.g_id)">Pay</button>
+            <button id="rzp-button1" class="btn btn-warning" (click)="createRzpayOrder(group.g_id)">Pay</button>
           </div>
 
 
-         <form class="row g-3" style="display:none;" id="showBidAmountForm{{i}}" (ngSubmit)="bidAmount()" #bidForms="ngForm">
+         <form class="row g-3" style="display:none;" id="showBidAmountForm{{i}}" (ngSubmit)="bidAmount(i)" #bidForms="ngForm">
           <h4> Bid Form </h4>
           <div class="col-md-12">
             <!-- <label for="inputEmail4" class="form-label">Amount</label> -->
             <input type="number" [class.is-invalid]="inputBidAmount.invalid && inputBidAmount.touched" class="form-control"  id="inputBidAmount{{i}}" value = "500" placeholder="Min bid value {{group.bid_amount}}" name="inputBidAmount" #inputBidAmount="ngModel" [(ngModel)] = "bidForm.amount">
+            <small>Please enter amount you are ready to forgo.</small>
           </div>
 
           <div class="col-md-6">
-              <button type="submit"  [disabled]="!bidForms.form.valid" class="btn btn-primary">Submit Bid</button>
+              <button type="submit"  [disabled]="!bidForms.form.valid" class="btn bg-custom">Submit Bid</button>
           </div>
 
           <div class="col-md-6">
@@ -126,9 +128,9 @@
           <mat-card-title *ngIf="group.name" class= "cardTitle" routerLink='/viewGroup/{{group.g_id}}'>{{group.name}} by {{group.admin}} </mat-card-title>
           <mat-card-subtitle *ngIf="group.duration">{{group.duration}}</mat-card-subtitle>
           <!-- <mat-card-subtitle>{{group.g_id}}</mat-card-subtitle> -->
-          <mat-card-subtitle *ngIf="group.totalAmount">₹{{group.totalAmount}} total</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.totalAmount">{{formatter.format(group.totalAmount).split('.')[0]}} total</mat-card-subtitle>
           <mat-card-subtitle *ngIf="group.usersInGroup">{{group.usersInGroup.length}} members</mat-card-subtitle>
-          <mat-card-subtitle *ngIf="group.amount">₹{{group.amount}}/member</mat-card-subtitle>
+          <mat-card-subtitle *ngIf="group.amount">{{formatter.format(group.amount).split('.')[0]}}/member</mat-card-subtitle>
           <mat-card-subtitle>{{group.minBidAmountUser ? "'" + group.minBidAmountUser  + "'" +  ' highest bid user with bid amount ' : ''}}  {{group.bid_amount ? group.bid_amount : ''}}</mat-card-subtitle>
 
         </mat-card-header>

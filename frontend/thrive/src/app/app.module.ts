@@ -32,6 +32,7 @@ import { ViewPaymentDetailsComponent } from './view-payment-details/view-payment
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TncComponent } from './tnc/tnc.component';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     AddGroupComponent,
     ViewGroupComponent,
     ViewPaymentDetailsComponent,
-    SignUpComponent
+    SignUpComponent,
+    TncComponent
   ],
   imports: [
     BrowserModule,

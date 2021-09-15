@@ -25,8 +25,8 @@ export class ViewGroupComponent implements OnInit {
   dataSource:any = [];
   snackBarRef: any;
   showActionColumn:boolean = false;
-
-  groupId = ''
+  groupName = '';
+  groupId = '';
 
   users:any;
   constructor( private _httpService:HttpService , private route:ActivatedRoute, private _snackBar: MatSnackBar) { }
@@ -43,7 +43,8 @@ export class ViewGroupComponent implements OnInit {
     .subscribe(
       data => {
       this.ELEMENT_DATA = data;
-      // console.log(this.ELEMENT_DATA[0].status);
+      console.log(this.ELEMENT_DATA);
+      this.groupName = this.ELEMENT_DATA[0].group_name;
       if(this.ELEMENT_DATA[0].status !== 'active'){
         this.showActionColumn = true;
         this.displayedColumns.push('action');

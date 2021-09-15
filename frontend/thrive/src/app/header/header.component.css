@@ -1,0 +1,19 @@
+#navbarNav{
+  flex-direction: row-reverse;;
+}
+
+.bg-custom{
+  background-color:#54C5CC;
+
+}
+::ng-deep .navbar-light .navbar-brand{
+  color: white;
+ }
+
+ ::ng-deep .navbar-light .navbar-nav .nav-link{
+   color: white;
+ }
+
+ ::ng-deep .navbar-light .navbar-nav .nav-link:hover{
+  color: yellow;
+}

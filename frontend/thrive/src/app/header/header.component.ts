@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -10,15 +10,16 @@ export class HeaderComponent implements OnInit {
 
   loggedInUser:string|null = 'None';
   token:string|null = 'None';
-  constructor(private router: Router) { }
+  constructor(private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-
     this.token = localStorage.getItem("token");
     this.loggedInUser = localStorage.getItem("loggedInUser");
+    const currentPath = this.route.snapshot.url[0].path;
 
-    if(!this.token){
+    if(!this.token && currentPath !== 'signup' && currentPath !== 'tnc'){
       this.router.navigate(['/login']);
+
 
     }
 

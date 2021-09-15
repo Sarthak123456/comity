@@ -10,6 +10,7 @@ export class Signup {
       public mobile:number,
       public addressLine1:string,
       public addressLine2:string,
+      public agreetnc:Boolean,
 
 
 

@@ -11,3 +11,12 @@
 td {
   padding-right: 8px;
 }
+
+.w-80{
+  max-width: 80%;
+  margin: auto;
+}
+
+.text-center{
+  text-align: center;
+}

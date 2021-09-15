@@ -9,15 +9,15 @@
 <mat-tab-group mat-stretch-tabs class="example-stretched-tabs mat-elevation-z4">
   <mat-tab label="Bank Details">
     <ul class="list-group list-group-flush">
-      <li class="list-group-item">A/C No. :  {{data.account_number}}</li>
-      <li class="list-group-item">Name : {{winner}} </li>
-      <li class="list-group-item">Branch Address : {{data.branch_address}} </li>
-      <li class="list-group-item">IFSC : {{data.ifsc}} </li>
+      <li class="list-group-item">A/C No. :  {{ data != undefined ? data.account_number : '' }} </li>
+      <li class="list-group-item">Name : {{data != undefined ? winner : ''}} </li>
+      <li class="list-group-item">Branch Address : {{data != undefined  ? data.branch_address : ''}} </li>
+      <li class="list-group-item">IFSC : {{data != undefined ? data.ifsc : ''}} </li>
     </ul>
   </mat-tab>
   <mat-tab label="GPay" *ngIf="data.gpay_qr_code">
   <div class="text-center">
-    <img src="http://127.0.0.1:8000{{data.gpay_qr_code}}" class="rounded" alt="Gpay_QR_Code">
+    <img src="http://127.0.0.1:8000{{data != undefined ? data.gpay_qr_code : ''}}" class="rounded" alt="Gpay_QR_Code">
   </div>
   <br>
   <p> <b>Note: </b> Take Screenshot of the UPI scan code and scan using images in the respective app.</p>
@@ -25,7 +25,7 @@
 </mat-tab>
   <mat-tab label="PayTm" *ngIf="data.paytm_qr_code">
   <div class="text-center">
-    <img src="http://127.0.0.1:8000{{data.paytm_qr_code}}" class="rounded" alt="paytm_qr_code">
+    <img src="http://127.0.0.1:8000{{ data != undefined  ? data.paytm_qr_code : ''}}" class="rounded" alt="paytm_qr_code">
   </div>
   <br>
   <p> <b>Note: </b> Take Screenshot of the UPI scan code and scan using images in the respective app.</p>
@@ -33,7 +33,7 @@
    </mat-tab>
   <mat-tab label="PhonePe" *ngIf="data.phonepe_qr_code">
   <div class="text-center">
-    <img src="http://127.0.0.1:8000{{data.phonepe_qr_code}}" class="rounded" alt="phonepe_qr_code">
+    <img src="http://127.0.0.1:8000{{data != undefined  ? data.phonepe_qr_code : ''}}" class="rounded" alt="phonepe_qr_code">
   </div>
   <br>
   <p> <b>Note: </b> Take Screenshot of the UPI scan code and scan using images in the respective app.</p>

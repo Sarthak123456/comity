@@ -1,3 +1,7 @@
+import django
+django.settings()
+settings.configure()
+
 from django.http import request
 from comity.models import *
 import datetime

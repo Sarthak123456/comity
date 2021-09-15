@@ -36,6 +36,19 @@
   max-width: 95%;
 }
 
+/* ::ng-deep .red-snackbar {
+  color: palevioletred ;
+} */
+
+::ng-deep .mat-simple-snackbar-action {
+  color: #54C5CC;
+}
+
+.bg-custom{
+  background-color:#8F4CF7;
+  color: white;
+
+}
 
 @media only screen and (min-device-width: 480px){
   .shrink{

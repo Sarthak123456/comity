@@ -343,7 +343,8 @@ def viewUsersInGroup(request):
                     "start_comity": group.start_comity,
                     "round": group.round,
                     "bid_amount": group.bidAmount,
-                    "status": grp.status
+                    "status": grp.status,
+                    "group_name" : grp.name
                 }
             )
 
@@ -431,6 +432,7 @@ def getAllGroups(request):
 
         for group in groups:
             id = group.id
+            winner = ''
             usersInGroup = group_table.objects.filter(g_id=id)
             currentGroup = group_info_table.objects.select_related().get(id=id)
             dateAfterOneDays = convertMilisToDatetime(currentGroup.updated_at) + relativedelta(days=+1)

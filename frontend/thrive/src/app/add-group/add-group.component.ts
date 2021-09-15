@@ -22,7 +22,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   groupId:any = '';
 
 
-  newGroup = new AddGroup('Test Group' , '1m' , 1000);
+  newGroup = new AddGroup('' , '1m' , parseInt(''));
   activeGroupDetails:any = [];
   inactiveGroupDetails:any =[];
   completedGroupDetails:any =[];
@@ -31,7 +31,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   inactiveGroupCount:number = 0;
   completedGroupCount:number = 0;
   userName = new Username("");
-  bidForm = new Bidform(0);
+  bidForm = new Bidform(parseInt(''));
   userDetails:any = '';
   showBankDetailsModal:boolean = true;
   showBidForm = false;
@@ -60,7 +60,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   }
 
   ngOnChanges(changes: SimpleChanges){
-    console.log("Called ngOnChanges" , changes);
+    // console.log("Called ngOnChanges" , changes);
 
   }
 
@@ -154,16 +154,16 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   // this.inactiveGroupIds =[];
   // this.completedGroupIds =[];
   // this.getGroups();
-    console.log("Called ngAfterViewInit");
+    // console.log("Called ngAfterViewInit");
 
     // console.log("transfer1 = " , y);
     // this.DOMready();
     // console.log("this.activeGroupDetails = " , this.activeGroupDetails);
 
     window.onload = () =>  {
-      console.log("Window loaded");
+      // console.log("Window loaded");
       //your magic here
-      this.setBidAndTransferButton();
+      // this.setBidAndTransferButton();
 
     }
   }
@@ -206,10 +206,11 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   setBidAndTransferButton(){
 
     this.activeGroupDetails.forEach((element: any, i:number) => {
-      const today = new Date();
-      const bidEndDate = new Date(element.bidEndDate);
+      const today = new Date().toLocaleDateString("en-US");
+      const bidEndDate = new Date(element.bidEndDate).toLocaleDateString("en-US");
+
       // var y = document.getElementById('bidButton' + i );
-      // console.log("bidButton=" , today , bidEndDate);
+      // console.log("bidButton=" , today , bidEndDate, today <= bidEndDate, today > bidEndDate);
 
       if(today <= bidEndDate){
         // console.log("today = " , today);
@@ -259,13 +260,13 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     this._httpService.getGroups(localStorage.getItem("token"))
     .subscribe(
       data => {
-        // console.log(data)
+        // console.log(data);
         // this.groupDetails = [];
         // this.groupIds = [];
         this.data = data;
         this.token = localStorage.getItem("token");
         this.loggedInUser = localStorage.getItem("loggedInUser");
-        console.log("data" , data);
+        // console.log("data" , data);
 
       this.data.forEach((element: any, i:number) => {
         element.usersInGroup.forEach((user: string|any) => {
@@ -356,6 +357,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     // console.log("this.activeGroupDetails = " , this.activeGroupDetails);
     var x = document.getElementById('showBidAmountForm' + i);
     var y = document.getElementById('subscribe' + i );
+    this.bidForm = new Bidform(parseInt(''));
     // this.getGroups();
 
     if(this.showBidForm){
@@ -382,43 +384,55 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
 
   openSnackBar(message: string, action: string) {
-    this.snackBarRef = this._snackBar.open(message, action, {'duration' : 5000});
+    this.snackBarRef = this._snackBar.open(message, action, {duration : 3000, panelClass: ['red-snackbar']});
   }
 
   addGroup(){
-    this._httpService.addGroup(this.newGroup, localStorage.getItem("token"))
-    .subscribe(
-      data => {
-        console.log("Added Group" , data)
-        this.data = data;
 
-        if(this.data.admin === this.loggedInUser){
-          console.log("this.data.admin == loggedInUser = " , this.data.admin === this.loggedInUser);
-          // this.inactiveGroupIds.push(this.data.g_id);
-          this.inactiveGroupDetails.push(data);
-          this.inactiveGroupCount ++;
+    if(!this.newGroup.amount){
+      this.openSnackBar("Please add amount", "close");
+    } else if(this.newGroup.amount < 100){
+      this.openSnackBar("Minimum amount ₹100", "close");
+    } else if(this.newGroup.amount > 100000){
+      this.openSnackBar("Maximum amount can't be above ₹1lakh", "close");
+    }
+    else{
+      this._httpService.addGroup(this.newGroup, localStorage.getItem("token"))
+      .subscribe(
+        data => {
+          // console.log("Added Group" , data)
+          this.data = data;
+
+          if(this.data.admin === this.loggedInUser){
+            // console.log("this.data.admin == loggedInUser = " , this.data.admin === this.loggedInUser);
+            // this.inactiveGroupIds.push(this.data.g_id);
+            this.inactiveGroupDetails.push(data);
+            this.inactiveGroupCount ++;
 
 
-          // this.groupIds.push(this.data.g_id);
-          // this.groupDetails.push(data);
-        }
+            // this.groupIds.push(this.data.g_id);
+            // this.groupDetails.push(data);
+          }
 
-        this.inactiveGroupCount = this.inactiveGroupDetails.length;
-        this.openSnackBar("Added new group!", "close");
-      },
-      error => {
-        console.log("error" , error)
-        this.openSnackBar("Error adding group", "close");
+          this.inactiveGroupCount = this.inactiveGroupDetails.length;
+          this.newGroup = new AddGroup('' , '1m' , 0);
+          this.openSnackBar("Added new group!", "close");
+        },
+        error => {
+          console.log("error" , error)
+          this.openSnackBar("Error adding group", "close");
+
+      }
+        );
 
     }
-      );
   }
 
   deleteAllGroups(){
     this._httpService.deleteAllGroups()
     .subscribe(
       data => {
-        console.log("Success" , data)
+        // console.log("Success" , data)
         this.openSnackBar("Deleted all group!", "close");
 
     },
@@ -428,16 +442,16 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
     }
       );
-    console.log("Deleted all groups");
+    // console.log("Deleted all groups");
   }
 
   deleteGroup(index:number, id:any, status:string){
     // console.log("index =" , index);
 
     // let id = this.inactiveGroupDetails.find((item: any) => item.index === index);
-    console.log("id =" , id);
+    // console.log("id =" , id);
 
-    this.openSnackBar(`Are you sure you want to delete the group!`, "yes");
+    this.openSnackBar(`Are you sure you want to delete the group?`, "Yes");
 
     this.snackBarRef.afterDismissed().subscribe((action:any) => {
       // console.log('::::::::::The snack-bar was dismissed', action);
@@ -446,7 +460,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
           this._httpService.deleteGroup(id)
           .subscribe(
             data => {
-              console.log('delete = ' , data);
+              // console.log('delete = ' , data);
               if(status == 'inactive'){
                 this.inactiveGroupDetails.splice(index,1);
                 // this.inactiveGroupIds.splice(index,1);
@@ -484,7 +498,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
       data => {
         // console.log(data);
         this.userDetails = data;
-        console.log(this.userDetails);
+        // console.log(this.userDetails);
 
         if(this.userDetails.message === 'user not found'){
           this.showUserNotFoundError = true;
@@ -504,7 +518,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     this._httpService.addUserToGroup(userDetails.userName , this.groupId)
     .subscribe(
       data => {
-        console.log("Added to group" ,  data);
+        // console.log("Added to group" ,  data);
         // let idx = -1;
 
         let newItem= this.inactiveGroupDetails.find((item:any, i:any) => {
@@ -564,7 +578,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     .subscribe(
       data => {
         this.userDetails = data;
-        console.log("userDetails = " , data);
+        // console.log("userDetails = " , data);
 
         let idx = -1;
 
@@ -580,8 +594,8 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
         // let index = idx;
 
-        console.log("newItem.g_id = " , newItem);
-        console.log("index = " , idx);
+        // console.log("newItem.g_id = " , newItem);
+        // console.log("index = " , idx);
         // console.log("inactiveGroupDetails = " , this.inactiveGroupDetails)
 
 
@@ -623,30 +637,63 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   }
 }
 
-  bidAmount(){
+  bidAmount(i:any){
     // console.log(this.bidForm.amount);
     // console.log(this.groupId);
     // console.log(this.groupDetails)
 
-    var minBidAmount = this.activeGroupDetails.find((item: any) => item.g_id === this.groupId);
-    console.log(minBidAmount.bid_amount);
+    var currentGroup = this.activeGroupDetails.find((item: any) => item.g_id === this.groupId);
+    // console.log(currentGroup);
 
-    if(this.bidForm.amount <= minBidAmount.bid_amount){
-      this.openSnackBar("Bid amount should be more than "+ "\u20B9"+ minBidAmount.bid_amount , "close");
+    if(!this.bidForm.amount){
+      this.openSnackBar("Please add a bid amount", "close");
 
-    } else if(this.bidForm.amount <= minBidAmount.minBidAmount){
-      this.openSnackBar("Minimum Bid amount should be "+ minBidAmount.minBidAmount , "close");
+    } else if(this.bidForm.amount <= currentGroup.bid_amount){
+      this.openSnackBar("Bid amount should be more than "+ "\u20B9"+ currentGroup.bid_amount , "close");
 
-    } else if(this.bidForm.amount > minBidAmount.totalAmount){
-      this.openSnackBar("Bid can't be more than total amount "+ minBidAmount.totalAmount , "close");
+
+    } else if(this.bidForm.amount <= currentGroup.minBidAmount){
+      this.openSnackBar("Minimum Bid amount should be "+ currentGroup.minBidAmount , "close");
+
+    } else if(this.bidForm.amount > currentGroup.totalAmount){
+      this.openSnackBar("Bid can't be more than total amount "+ currentGroup.totalAmount , "close");
 
     } else{
       this._httpService.submitBidForm(this.loggedInUser , this.bidForm.amount, this.groupId)
       .subscribe(
         data => {
+          currentGroup.bid_amount = this.bidForm.amount;
+          currentGroup.minBidAmountUser = this.loggedInUser;
+
+          // if()
+          // minBidAmountUser
           // let groupDetail = JSON.parse(JSON.stringify(data));
 
           this.openSnackBar("Bid submitted successfully", "close");
+           // console.log("this.activeGroupDetails = " , this.activeGroupDetails);
+          var x = document.getElementById('showBidAmountForm' + i);
+          var y = document.getElementById('subscribe' + i );
+          this.bidForm = new Bidform(0);
+          // this.getGroups();
+
+          if(this.showBidForm){
+
+
+          // var x = document.getElementById("myDIV");
+            if (x && x.style.display === "none") {
+              x.style.display = "block";
+            } else if(x) {
+              x.style.display = "none";
+            }
+        } else{
+          if (y && y.style.display === "none") {
+            y.style.display = "block";
+          } else if(y) {
+            y.style.display = "none";
+          }
+
+
+  }
           // this.userDetails = data;
       },
         error => {
@@ -663,20 +710,20 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
   onGpayImageChanged(event:any){
     this.gpayQR = event.target.files[0];
-    console.log(this.gpayQR);
+    // console.log(this.gpayQR);
   }
   onPaytmImageChanged(event:any){
     this.paytmQR = event.target.files[0];
-    console.log(this.paytmQR);
+    // console.log(this.paytmQR);
   }
   onPhonepeImageChanged(event:any){
     this.phonepeQR = event.target.files[0];
-    console.log(this.phonepeQR);
+    // console.log(this.phonepeQR);
   }
 
 
   onBankDetails(){
-    console.log(this.bankDetails);
+    // console.log(this.bankDetails);
 
     if(this.gpayQR === undefined && this.paytmQR == undefined && this.phonepeQR == undefined || (this.bankDetails.accountNumber === '' && this.bankDetails.ifsc == '')){
       this.openSnackBar("Please enter atleast 2 payment detail", "close");
@@ -684,8 +731,8 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     this._httpService.saveBankDetails(this.bankDetails, this.loggedInUser, this.gpayQR, this.phonepeQR, this.paytmQR)
     .subscribe(
       data => {
-        console.log("User bank details saved" , data);
-        console.log("User bank details saved" , this.bankDetails);
+        // console.log("User bank details saved" , data);
+        // console.log("User bank details saved" , this.bankDetails);
         this.openSnackBar("User bank details saved!", "close");
       },
       error => {
@@ -710,11 +757,11 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     .subscribe(
       data => {
 
-        console.log("got Razor Pay Order Id" , data);
+        // console.log("got Razor Pay Order Id" , data);
         order_response = data
         if(order_response.createRazorPayOrderId === "True"){
           order_id = order_response.order_id.id;
-          console.log("order_id = " , order_id)
+          // console.log("order_id = " , order_id)
         }
         if(order_id !== undefined && order_id !== '' ){
           this.payWithRazor(order_id, order_amount)
@@ -735,7 +782,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     // const order_id = '';
 
     // const order_id = this.createRzpayOrder(group_id)
-    console.log("order_id = " , order_id)
+    // console.log("order_id = " , order_id)
     if(order_id !== undefined){
       const options: any = {
         key: 'rzp_test_nu9LsvfHJHqHQx',
@@ -814,13 +861,13 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
   inviteUserToGroup(){
     const groupId = this.groupId;
-    console.log(groupId);
+    // console.log(groupId);
 
     const details = this.inactiveGroupDetails.find((item:any) => {
       return item.g_id == groupId;
 
     });
-    console.log(details);
+    // console.log(details);
     // const url = `https://wa.me/91${number}?text=Hi%20There!`
     // formatter.format(group.totalAmount).split('.')[0]
     // const text = encodeURIComponent(`${details.admin} Invited you to join group with monthly cost of ${details.amount} \n Join: http://localhost:4200/login`);

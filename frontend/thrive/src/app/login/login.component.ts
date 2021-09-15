@@ -12,7 +12,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 })
 export class LoginComponent implements OnInit {
 
-  loginModel = new LoginFormModel("testUserForRestApi" , "Sarthak123");
+  loginModel = new LoginFormModel("" , "");
   token:any;
 
 
@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit {
   }
 
   openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action);
+    this._snackBar.open(message, action, {duration:3000});
   }
 
 }

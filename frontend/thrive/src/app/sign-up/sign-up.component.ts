@@ -10,7 +10,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
   styleUrls: ['./sign-up.component.css']
 })
 export class SignUpComponent implements OnInit {
-  signUp = new Signup("" , '' , '' , '' , '' , '' , 0, '' , '');
+  signUp = new Signup("" , '' , '' , '' , '' , '' , 0, '' , '', false);
   data:any;
   constructor(private _snackBar: MatSnackBar, private _httpService:HttpService) { }
 
@@ -46,6 +46,8 @@ export class SignUpComponent implements OnInit {
       this.openSnackBar("Please fill confirm password!", "close");
     } else if(this.signUp.confirmPassword !== this.signUp.password){
       this.openSnackBar("Password and Confirm password don't match!", "close");
+    } else if(!this.signUp.agreetnc){
+      this.openSnackBar("Please agree to out Terms & Conditions", "close");
     }
     // mobile password userName email confirmPassword addressLine1 addressLine2
 
@@ -77,7 +79,7 @@ export class SignUpComponent implements OnInit {
   }
 
   openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action);
+    this._snackBar.open(message, action, {"duration": 3000});
   }
 
 }
