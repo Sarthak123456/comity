@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 })
 export class HttpService {
 
-  url = 'http://127.0.0.1:8000/login';
+  base_url = 'https://thrivefund.herokuapp.com/';
   constructor(private _http:HttpClient) { }
 
 
@@ -22,7 +22,7 @@ export class HttpService {
     formData.set('email' , loginForm.email)
     formData.set('password' , loginForm.password)
 
-    return this._http.post(this.url , formData);
+    return this._http.post(this.base_url+'/login' , formData);
 
   }
 
@@ -40,7 +40,7 @@ export class HttpService {
 
     }
 
-    return this._http.post("http://127.0.0.1:8000/get/groups", formData)
+    return this._http.post(this.base_url+'get/groups', formData)
   }
 
   addGroup(groupData:any, token:any){
@@ -60,19 +60,19 @@ export class HttpService {
 
     }
 
-    return this._http.post("http://127.0.0.1:8000/addGroup" , formData);
+    return this._http.post(this.base_url+"/addGroup" , formData);
   }
 
   deleteAllGroups(){
 
-    return this._http.delete("http://127.0.0.1:8000/delete/groups")
+    return this._http.delete(this.base_url+"/delete/groups")
 
   }
 
 
   deleteGroup(id:string){
 
-    return this._http.delete("http://127.0.0.1:8000/delete/group/"+id)
+    return this._http.delete(this.base_url+"delete/group/"+id)
 
   }
 
@@ -87,7 +87,7 @@ export class HttpService {
 
     formData.set('user' , userName.user);
 
-    return this._http.post("http://127.0.0.1:8000/get/user/" , formData)
+    return this._http.post(this.base_url+"get/user/" , formData)
   }
 
   addUserToGroup(userName:any, groupId:string){
@@ -102,7 +102,7 @@ export class HttpService {
     formData.set('username' , userName);
     formData.set('g_id' , groupId);
 
-    return this._http.post("http://127.0.0.1:8000/add/user/" , formData)
+    return this._http.post(this.base_url+"/add/user/" , formData)
   }
 
   viewGroup(groupId:string){
@@ -116,7 +116,7 @@ export class HttpService {
 
     formData.set('g_id' , groupId);
 
-    return this._http.post("http://127.0.0.1:8000/get/group/users/" , formData)
+    return this._http.post(this.base_url+"/get/group/users/" , formData)
 
   }
 
@@ -137,7 +137,7 @@ export class HttpService {
     }
 
 
-    return this._http.post("http://127.0.0.1:8000/group/start/" , formData)
+    return this._http.post(this.base_url+"/group/start/" , formData)
 
   }
 
@@ -158,7 +158,7 @@ export class HttpService {
     }
 
 
-    return this._http.post("http://127.0.0.1:8000/submit/bid" , formData)
+    return this._http.post(this.base_url+"/submit/bid" , formData)
 
   }
 
@@ -184,7 +184,7 @@ export class HttpService {
     // console.log(formData.get('first_name'));
 
 
-    return this._http.post("http://127.0.0.1:8000/signup" , formData)
+    return this._http.post(this.base_url+"/signup" , formData)
 
   }
 
@@ -207,7 +207,7 @@ export class HttpService {
     // console.log(formData.get('first_name'));
 
 
-    return this._http.post("http://127.0.0.1:8000/bank_details" , formData)
+    return this._http.post(this.base_url+"/bank_details" , formData)
 
   }
 
@@ -224,7 +224,7 @@ export class HttpService {
     formData.append('name' ,  winner);
 
 
-    return this._http.post("http://127.0.0.1:8000/get/bank_details" , formData)
+    return this._http.post(this.base_url+"/get/bank_details" , formData)
 
   }
 
@@ -245,7 +245,7 @@ export class HttpService {
 
 
 
-    return this._http.post("http://127.0.0.1:8000/get/razorpay/order_id/" , formData)
+    return this._http.post(this.base_url+"/get/razorpay/order_id/" , formData)
 
   }
 
@@ -267,7 +267,7 @@ export class HttpService {
 
 
 
-    return this._http.post("http://127.0.0.1:8000/get/razorpay/save/" , formData)
+    return this._http.post(this.base_url+"/get/razorpay/save/" , formData)
 
   }
 
@@ -278,7 +278,7 @@ export class HttpService {
     formData.append('g_id' ,  groupId);
     console.log(userName , groupId);
 
-    return this._http.post("http://127.0.0.1:8000/delete/group/user/" , formData)
+    return this._http.post(this.base_url+"/delete/group/user/" , formData)
 
 
   }
