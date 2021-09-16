@@ -24,9 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'y^5+or*4wy-b=wia_(3i!$m1%#7)0t3dk_=#%*bqsgfa5k2r!s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['thrivefund.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1' , 'thrivefund.herokuapp.com']
 
 
 # Application definition

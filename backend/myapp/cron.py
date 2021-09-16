@@ -1,6 +1,7 @@
 import django
-django.settings()
-settings.configure()
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+django.setup()
 
 from django.http import request
 from comity.models import *
@@ -14,6 +15,7 @@ def my_cron_job():
     groups = group_info_table.objects.all()
     users = User.objects.all()
     for user in users:
+        print('collecting user details for ' + user.username)
         user_info = UserInfo.objects.get(u_id = user.id) if UserInfo.objects.filter(u_id = user.id).exists() else None
         # -------------- Deactivate Subscription -------------------
         if user_info:
@@ -207,3 +209,6 @@ def getCurrentDateInLocalTimezone():
 def unixTimeMillis(dt):
     epoch = datetime.datetime.utcfromtimestamp(0)
     return (dt - epoch).total_seconds() * 1000.0
+
+if __name__ == "__main__":
+    my_cron_job()
