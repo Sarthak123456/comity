@@ -435,7 +435,7 @@ section.pricing {
 .hero {
   display: table;
   position: relative;
-  background-image: url(http://127.0.0.1:8000/static/assets/cover.jpg);
+  background-image: url(https://thrivefund.herokuapp.com/static/assets/cover.jpg);
   background-size: cover;
   padding: 150px 0;
   color: #fff;
@@ -575,7 +575,7 @@ section.pricing {
   height: 490px;
   overflow: hidden;
   padding-top: 85px;
-  background: url("http://127.0.0.1:8000/static/assets/parallax-bg.jpg") center top no-repeat;
+  background: url("https://thrivefund.herokuapp.com/static/assets/parallax-bg.jpg") center top no-repeat;
 }
 
 .welcome h2 {
