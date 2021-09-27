@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Signup } from '../signup';
 import { HttpService } from '../http.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
-
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-sign-up',
@@ -10,9 +10,14 @@ import {MatSnackBar} from '@angular/material/snack-bar';
   styleUrls: ['./sign-up.component.css']
 })
 export class SignUpComponent implements OnInit {
-  signUp = new Signup("" , '' , '' , '' , '' , '' , 0, '' , '', false);
+  signUp = new Signup("" , '' , '' , '' , '' , '' , parseInt(''), '' , '', false);
   data:any;
-  constructor(private _snackBar: MatSnackBar, private _httpService:HttpService) { }
+  constructor(private _snackBar: MatSnackBar, private _httpService:HttpService, private titleService:Title) {
+    const title = ['Sign Up'];
+    // console.log(this.titleService.getTitle());
+    this.titleService.setTitle(([this.titleService.getTitle() , title]).join(' | '));
+
+   }
 
   ngOnInit(): void {
 
@@ -63,6 +68,8 @@ export class SignUpComponent implements OnInit {
             }else{
               console.log("User signed up" , this.data);
               this.openSnackBar("Added new user!", "close");
+              this.signUp = new Signup("" , '' , '' , '' , '' , '' , parseInt(''), '' , '', false);
+              // this.router.navigate(['/login']);
             }
           },
           error => {

@@ -6,6 +6,13 @@
   background-color:#54C5CC;
 
 }
+
+.rosca-logo{
+  max-height: 200px;
+  margin: -200px 0;
+
+}
+
 ::ng-deep .navbar-light .navbar-brand{
   color: white;
  }

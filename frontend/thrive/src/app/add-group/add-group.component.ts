@@ -1,4 +1,4 @@
-import { Component, OnInit,OnChanges, SimpleChanges,  ElementRef, ViewChild, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, OnDestroy} from '@angular/core';
+import { Component, OnInit, AfterViewChecked} from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import { HttpService } from '../http.service';
 import { AddGroup } from '../add-group';
@@ -6,7 +6,7 @@ import { Username } from '../username';
 import { BankDetails } from '../bank-details';
 import { Bidform } from '../bid-form';
 import { WindowRefService } from '../window-ref.service';
-import { ITS_JUST_ANGULAR } from '@angular/core/src/r3_symbols';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -14,7 +14,7 @@ import { ITS_JUST_ANGULAR } from '@angular/core/src/r3_symbols';
   templateUrl: './add-group.component.html',
   styleUrls: ['./add-group.component.css']
 })
-export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterContentInit, AfterContentChecked, AfterViewInit, AfterViewChecked, OnDestroy {
+export class AddGroupComponent implements OnInit,AfterViewChecked {
   // @ViewChild('transfer1') myDiv!: ElementRef;
 
   // groupDetails: any = [];
@@ -56,11 +56,11 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   });
 
 
-  constructor(private _snackBar: MatSnackBar, private _httpService:HttpService, private winRef: WindowRefService) {
-  }
+  constructor(private _snackBar: MatSnackBar, private _httpService:HttpService, private winRef: WindowRefService, private titleService:Title) {
+    const title = ['Add Group'];
+    // console.log(this.titleService.getTitle());
+    this.titleService.setTitle(([this.titleService.getTitle() , title]).join(' | '));
 
-  ngOnChanges(changes: SimpleChanges){
-    // console.log("Called ngOnChanges" , changes);
 
   }
 
@@ -68,151 +68,20 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     this.getGroups();
   }
 
-  ngDoCheck(){
-    // console.log("Called ngDoCheck");
-
-  }
-
-  ngAfterContentInit(){
-    // console.log("Called ngAfterContentInit");
-    // this.activeGroupDetails.forEach((element: any, i:number) => {
-    //   const today = new Date();
-    //   const bidEndDate = new Date(element.bidEndDate);
-
-    //   if(today <= bidEndDate){
-    //     // console.log("today = " , today);
-    //     // console.log("bidEndDate = " , bidEndDate);
-    //     var y = document.getElementById('bidButton' + i );
-    //     console.log("bidButton=" , y);
-    //     // console.log("loggedInUser = " ,  localStorage.getItem("loggedInUser"));
-
-    //     if(y && y.style.display !== "none"){
-    //       if(element.minBidAmountUser ===  localStorage.getItem("loggedInUser")){
-    //         if(y){
-    //           y.style.display = "initial";
-    //         }
-    //       }
-
-    //     }
-
-    //   }
-    // });
-
-
-  }
-
-  ngAfterContentChecked():void {
-    // console.log("Called ngAfterContentChecked");
-
-  }
-//   DOMready() {
-//     if (document.getElementById('bidButton1')) {
-//       let testPosition:any =  document.getElementById('bidButton1');
-//       console.log("testPosition in DOM = " , testPosition);
-//       if(testPosition){
-//         // this.activeGroupDetails.forEach((element: any, i:number) => {
-//         //   const today = new Date();
-//         //   const bidEndDate = new Date(element.bidEndDate);
-//         //   var y = document.getElementById('bidButton' + i );
-//         //   console.log("bidButton=" , y);
-
-//         //   if(today <= bidEndDate){
-//         //     // console.log("today = " , today);
-//         //     // console.log("bidEndDate = " , bidEndDate);
-//         //     var y = document.getElementById('bidButton' + i );
-//         //     console.log("bidButton=" , y);
-//         //     // console.log("loggedInUser = " ,  localStorage.getItem("loggedInUser"));
-
-//         //     if(y && y.style.display !== "none"){
-//         //       if(element.minBidAmountUser ===  localStorage.getItem("loggedInUser")){
-//         //         if(y){
-//         //           y.style.display = "initial";
-//         //         }
-//         //       }
-
-//         //     }
-
-//         //   }
-//         // });
-
-//       }
-//       // for (let i = 0; i < testPosition.length; i++) {
-//       // console.log("testPosition in DOM = :" , testPosition[i]);
-//       // }
-//   }else {
-//      setTimeout(this.DOMready, 2000)
-//  }
-
-// }
-  ngAfterViewInit(){
-  // this.groupDetails = [];
-  // this.groupIds = [];
-  // this.activeGroupDetails = [];
-  // this.inactiveGroupDetails =[];
-  // this.completedGroupDetails =[];
-  // this.activeGroupIds = [];
-  // this.inactiveGroupIds =[];
-  // this.completedGroupIds =[];
-  // this.getGroups();
-    // console.log("Called ngAfterViewInit");
-
-    // console.log("transfer1 = " , y);
-    // this.DOMready();
-    // console.log("this.activeGroupDetails = " , this.activeGroupDetails);
-
-    window.onload = () =>  {
-      // console.log("Window loaded");
-      //your magic here
-      // this.setBidAndTransferButton();
-
-    }
-  }
   ngAfterViewChecked(){
-    // console.log("Called ngAfterViewChecked");
-    // this.activeGroupDetails.forEach((element: any, i:number) => {
-    //   const today = new Date();
-    //   const bidEndDate = new Date(element.bidEndDate);
-    //   var y = document.getElementById('bidButton' + i );
-    //   console.log("bidButton=" , y);
-
-    //   if(today < bidEndDate){
-    //     // console.log("today = " , today);
-    //     // console.log("bidEndDate = " , bidEndDate);
-    //     var y = document.getElementById('bidButton' + i );
-    //     console.log("bidButton=" , y);
-    //     // console.log("loggedInUser = " ,  localStorage.getItem("loggedInUser"));
-
-    //     if(y && y.style.display !== "none"){
-    //       if(element.minBidAmountUser ===  localStorage.getItem("loggedInUser")){
-    //         if(y){
-    //           y.style.display = "initial";
-    //         }
-    //       }
-
-    //     }
-
-    //   }
-    // });
     this.setBidAndTransferButton();
-
-
   }
-
-  ngOnDestroy(){
-    // console.log("Called ngOnDestroy");
-
-  }
-
   setBidAndTransferButton(){
 
     this.activeGroupDetails.forEach((element: any, i:number) => {
-      const today = new Date().toLocaleDateString("en-US");
-      const bidEndDate = new Date(element.bidEndDate).toLocaleDateString("en-US");
+      // console.log("element = "  , element);
+      const today = Date.now();
+      const bidEndDate = element.bidEndDateInMilis ? element.bidEndDateInMilis : null;
 
       // var y = document.getElementById('bidButton' + i );
-      // console.log("bidButton=" , today , bidEndDate, today <= bidEndDate, today > bidEndDate);
+      // console.log("bidButton=", today , bidEndDate, today <= bidEndDate, today > bidEndDate);
 
-      if(today <= bidEndDate){
+      if(today > bidEndDate){
         // console.log("today = " , today);
         // console.log("bidEndDate = " , bidEndDate);
         var y = document.getElementById('bidButton' + i );
@@ -223,14 +92,14 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
           // console.log("element  ="  , element );
 
             if(y){
-              y.style.display = "initial";
+              y.style.display = "none";
               this.showTransferButton = true;
             }
 
 
         }
 
-      }  else if(today > bidEndDate){
+      }  else if(today <= bidEndDate){
 
        const y = document.getElementById('transfer' + i );
         // console.log("loggedInUser = " ,  localStorage.getItem("loggedInUser"));
@@ -239,7 +108,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
           // console.log("element  ="  , element );
 
             if(y){
-              y.style.display = "initial";
+              y.style.display = "none";
               this.showBidButton = true;
             }
 
@@ -260,7 +129,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     this._httpService.getGroups(localStorage.getItem("token"))
     .subscribe(
       data => {
-        // console.log(data);
+        console.log("data = " , data);
         // this.groupDetails = [];
         // this.groupIds = [];
         this.data = data;
@@ -270,6 +139,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
       this.data.forEach((element: any, i:number) => {
         element.usersInGroup.forEach((user: string|any) => {
+          // console.log(element.bid_end_date);
           if(user.username === this.loggedInUser){
 
             if(user.superuser === true){
@@ -345,8 +215,8 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
 
   },
     error => {
-      console.log("error" , error)
-      this.openSnackBar("Email or password wrong " + error.message, "close");
+      console.log("error" , error);
+      this.openSnackBar("Error getting groups", "close");
 
   })
 
@@ -415,7 +285,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
           }
 
           this.inactiveGroupCount = this.inactiveGroupDetails.length;
-          this.newGroup = new AddGroup('' , '1m' , 0);
+          this.newGroup = new AddGroup('' , '1m' , parseInt(''));
           this.openSnackBar("Added new group!", "close");
         },
         error => {
@@ -726,7 +596,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     // console.log(this.bankDetails);
 
     if(this.gpayQR === undefined && this.paytmQR == undefined && this.phonepeQR == undefined || (this.bankDetails.accountNumber === '' && this.bankDetails.ifsc == '')){
-      this.openSnackBar("Please enter atleast 2 payment detail", "close");
+      this.openSnackBar("Please enter bank details and one upi details payment detail", "close");
     } else{
     this._httpService.saveBankDetails(this.bankDetails, this.loggedInUser, this.gpayQR, this.phonepeQR, this.paytmQR)
     .subscribe(
@@ -734,6 +604,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
         // console.log("User bank details saved" , data);
         // console.log("User bank details saved" , this.bankDetails);
         this.openSnackBar("User bank details saved!", "close");
+         window.location.reload();
       },
       error => {
         console.log("error" , error)
@@ -747,7 +618,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
   }
 
   createRzpayOrder(group_id:any) {
-    const order_amount = 105 * 100;
+    const order_amount = 104 * 100;
     let order_id = ''
     let order_response:any;
     const token = localStorage.getItem("token")
@@ -785,12 +656,12 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     // console.log("order_id = " , order_id)
     if(order_id !== undefined){
       const options: any = {
-        key: 'rzp_test_nu9LsvfHJHqHQx',
+        key: 'rzp_live_sioclijuytb3Mp',
         amount: order_amount, // amount should be in paise format to display Rs 1255 without decimal point
         currency: 'INR',
-        name: 'Thrive', // company name or product name
+        name: 'Rosca', // company name or product name
         description: 'Monthly subscription',  // product description
-        image: 'http://127.0.0.1:8000/static/assets/logo.png', // company logo or product image
+        image: 'http://127.0.0.1:8000/static/assets/rosca-logo.png', // company logo or product image
         order_id: order_id, // order_id created by you in backend
         modal: {
           // We should prevent closing of the form when esc key is pressed.
@@ -818,7 +689,7 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
             data => {
               let paymentResponse:any;
 
-              console.log("saveRazorPayPaymentDetails" , data);
+              // console.log("saveRazorPayPaymentDetails" , data);
               paymentResponse = data;
 
               if(paymentResponse.Razorpay_payment == "success"){
@@ -871,7 +742,8 @@ export class AddGroupComponent implements OnInit, OnChanges, DoCheck, AfterConte
     // const url = `https://wa.me/91${number}?text=Hi%20There!`
     // formatter.format(group.totalAmount).split('.')[0]
     // const text = encodeURIComponent(`${details.admin} Invited you to join group with monthly cost of ${details.amount} \n Join: http://localhost:4200/login`);
-    const text = encodeURIComponent(`${details.admin} Invited you to join group with monthly cost of ${this.formatter.format(details.amount).split('.')[0]} \n Join: http://localhost:4200/login`);
+    const text = encodeURIComponent(`Hi,\n${details.admin} invited you to join Rosca with monthly cost of ${this.formatter.format(details.amount).split('.')[0]}. \n\nRosca is a trusted and the first 'NO COMMISSION' social saving platform.\n\nYou can create your group and invite other like-minded people especially friends and family from all over India and start saving or investing money. In times of need, you can also borrow money that is multiples of what you have invested by bidding. \n\nIt gives you all the freedom to make your group according to your flexibility without any commission. \nJoin: www.therosca.in/login`);
+    console.log(text);
     const url = `https://wa.me/?text=${text}&lang=en`
     window.open(url, "_blank");
   }

@@ -1,52 +1,49 @@
-<head>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Raleway:400,500,700|Roboto:400,900" rel="stylesheet">
-
-</head>
-
 <div class='full-width'>
  <!-- ======= Hero Section ======= -->
   <section id="hero" class="hero">
     <div class="container text-center">
       <div class="row">
         <div class="col-md-12">
-          <a class="hero-brand" routerLink='/' title="Home"><img alt="Bell Logo" src="https://thrivefund.herokuapp.com/static/assets/logo.png"></a>
+          <a class="hero-brand" title="Home"><img alt="ROSCA Logo" class='brand-img' src="https://therosca.herokuapp.com/static/assets/rosca-logo.png"></a>
         </div>
       </div>
 
       <div class="col-md-12">
-        <h1>
-          Thrive
-        </h1>
+        <!-- <h1>
+          ROSCA
+        </h1> -->
 
         <p class="tagline">
           India's only 'No Comission' social group saving platform.
         </p>
-        <a class="btn btn-full scrollto" routerLink='/login'>Get Started Now</a>
+        <a class="btn btn-full scrollto bg-custom" routerLink='/login'>Get Started Now</a>
       </div>
     </div>
 
   </section><!-- End Hero -->
 
   <!-- ======= Header ======= -->
-  <header id="header" class="d-flex align-items-center sticky-top ">
+  <header id="header" class="d-flex align-items-center sticky-top">
     <div class="container d-flex align-items-center">
 
       <div id="logo" class="me-auto">
-        <a href="index.html"><img src="https://thrivefund.herokuapp.com/static/assets/logo-nav.png" alt=""></a>
+        <a href='#hero'><img alt="ROSCA Logo" class="rosca-logo" src="https://therosca.herokuapp.com/static/assets/rosca-logo.png"></a>
         <!-- Uncomment below if you prefer to use a text image -->
-        <!--<h1><a href="#hero">Bell</a></h1>-->
+        <!--<h1><a href="#hero">ROSCA</a></h1>-->
       </div>
 
       <!-- {% comment %} <app-header></app-header> {% endcomment %} -->
 
       <nav id="navbar" routerLink = '/' class="navbar order-last order-lg-0">
         <ul>
-          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
-          <li><a class="nav-link scrollto" href="#about">About</a></li>
-          <li><a class="nav-link scrollto" href="#features">Features</a></li>
-          <li><a class="nav-link scrollto " href="#portfolio">Portfolio</a></li>
-          <li><a class="nav-link scrollto" href="#team">Team</a></li>
+          <li><a class="nav-link scrollto" href="#hero">Home</a></li>
+          <li><a class="nav-link scrollto" href="#works">How it works?</a></li>
+          <li><a class="nav-link scrollto" href="#about">About Us</a></li>
+          <li><a class="nav-link scrollto" href="#faq">FAQ's</a></li>
+          <li><a class="nav-link scrollto " href="#pricing">Pricing</a></li>
+          <li><a class="nav-link scrollto" href="#contact">Contact Us</a></li>
+          <!-- <li><a class="nav-link scrollto" routerLink='/login'>Login/Signup</a></li> -->
+          <li><button routerLink='/login' class="btn btn-primary btn-sm ms-3">Login</button></li>
           <!-- <li class="dropdown"><a href="#"><span>Drop Down</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
               <li><a href="#">Drop Down 1</a></li>
@@ -64,17 +61,17 @@
               <li><a href="#">Drop Down 4</a></li>
             </ul>
           </li> -->
-          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+          <!-- {% comment %} <li><a class="nav-link scrollto" href="#contact">Contact</a></li> {% endcomment %} -->
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav>
 
-      <div class="header-social-links d-flex align-items-center">
+      <!-- <div class="header-social-links d-flex align-items-center">
         <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
         <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
         <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
         <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-      </div>
+      </div> -->
     </div>
   </header><!-- End Header -->
 
@@ -83,105 +80,276 @@
 
   <main id="main">
 
+
+    <!-- ======= Team Section ======= -->
+    <section class="team" id="works">
+      <div class="container">
+        <h2 class="text-center">
+          How it works?
+        </h2>
+
+
+
+<div class="container">
+    <div class="page-header">
+    </div>
+    <ul class="timeline">
+        <li>
+          <div class="timeline-badge"><i class="glyphicon glyphicon-check">1</i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Create your group</h4>
+            </div>
+            <div class="timeline-body">
+              <p>You can create your own group </p>
+              <img alt="Create group"  class='timeline-body-img' src="https://therosca.herokuapp.com/static/assets/create-group.jpeg">
+
+            </div>
+          </div>
+        </li>
+        <li class="timeline-inverted">
+          <div class="timeline-badge"><i class="glyphicon glyphicon-credit-card">2</i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Add users</h4>
+            </div>
+            <div class="timeline-body">
+              <p>Add users to the group</p>
+              <img alt="Add users"  class='timeline-body-img' src="https://therosca.herokuapp.com/static/assets/add-users.jpeg">
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="timeline-badge"><i class="glyphicon glyphicon-credit-card">3</i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Add your payment details</h4>
+            </div>
+            <div class="timeline-body">
+              <p>Add your payment</p>
+              <img alt="Payment details" class='timeline-body-img' src="https://therosca.herokuapp.com/static/assets/payment-details.jpeg">
+            </div>
+          </div>
+        </li>
+        <li class="timeline-inverted">
+          <div class="timeline-badge"><i class="glyphicon glyphicon-credit-card">4</i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Start Group</h4>
+            </div>
+            <div class="timeline-body">
+              <p>Click on start group. Every user should start the group to make it active.</p>
+              <img alt="Pending users" class='timeline-body-img' src="https://therosca.herokuapp.com/static/assets/start-group.jpeg">
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="timeline-badge"><i class="glyphicon glyphicon-credit-card">5</i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Bid</h4>
+            </div>
+            <div class="timeline-body">
+              <p>A user will be selected at random. You can choose to let the biddng window close to tranfer the money to the user or you can bid for an amount to forgo and get the money this month.</p>
+              <p>Every user need to be a Superuser to bid and can bid for as many times in any group for 1 month. When the bidding window closes the user with the most money to forgo will win and will be declared winner for that month.</p>
+            </div>
+          </div>
+        </li>
+        <!-- <li class="timeline-inverted">
+          <div class="timeline-badge success"><i class="glyphicon glyphicon-thumbs-up">4</i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Mussum ipsum cacilds</h4>
+            </div>
+            <div class="timeline-body">
+              <p>Mussum ipsum cacilds, vidis litro abertis. Consetis adipiscings elitis. Pra lá , depois divoltis porris, paradis. Paisis, filhis, espiritis santis. Mé faiz elementum girarzis, nisi eros vermeio, in elementis mé pra quem é amistosis quis leo. Manduma pindureta quium dia nois paga. Sapien in monti palavris qui num significa nadis i pareci latim. Interessantiss quisso pudia ce receita de bolis, mais bolis eu num gostis.</p>
+            </div>
+          </div>
+        </li> -->
+    </ul>
+</div>
+
+        <!-- <div class="row">
+          <div class="col-sm-3 col-xs-6">
+            <div class="card card-block">
+              <a href="#"><img alt="" class="team-img" src="https://thrivefund.herokuapp.com/static/assets/team-1.jpg">
+                <div class="card-title-wrap">
+                  <span class="card-title">Sergio Fez</span> <span class="card-text">Art Director</span>
+                </div>
+
+                <div class="team-over">
+                  <h4 class="hidden-md-down">
+                    Connect with me
+                  </h4>
+
+                  <nav class="social-nav">
+                    <a href="#"><i class="bi bi-twitter"></i></a> <a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i class="bi bi-linkedin"></i></a> <a href="#"><i class="bi bi-envelope-fill"></i></a>
+                  </nav>
+
+                  <p>
+                    Lorem ipsum dolor sit amet, eu sed suas eruditi honestatis.
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-sm-3 col-xs-6">
+            <div class="card card-block">
+              <a href="#"><img alt="" class="team-img" src="https://thrivefund.herokuapp.com/static/assets/team-2.jpg">
+                <div class="card-title-wrap">
+                  <span class="card-title">Sergio Fez</span> <span class="card-text">Art Director</span>
+                </div>
+
+                <div class="team-over">
+                  <h4 class="hidden-md-down">
+                    Connect with me
+                  </h4>
+
+                  <nav class="social-nav">
+                    <a href="#"><i class="bi bi-twitter"></i></a> <a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i class="bi bi-linkedin"></i></a> <a href="#"><i class="bi bi-envelope-fill"></i></a>
+                  </nav>
+
+                  <p>
+                    Lorem ipsum dolor sit amet, eu sed suas eruditi honestatis.
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-sm-3 col-xs-6">
+            <div class="card card-block">
+              <a href="#"><img alt="" class="team-img" src="https://thrivefund.herokuapp.com/static/assets/team-3.jpg">
+                <div class="card-title-wrap">
+                  <span class="card-title">Sergio Fez</span> <span class="card-text">Art Director</span>
+                </div>
+
+                <div class="team-over">
+                  <h4 class="hidden-md-down">
+                    Connect with me
+                  </h4>
+
+                  <nav class="social-nav">
+                    <a href="#"><i class="bi bi-twitter"></i></a> <a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i class="bi bi-linkedin"></i></a> <a href="#"><i class="bi bi-envelope-fill"></i></a>
+                  </nav>
+
+                  <p>
+                    Lorem ipsum dolor sit amet, eu sed suas eruditi honestatis.
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-sm-3 col-xs-6">
+            <div class="card card-block">
+              <a href="#"><img alt="" class="team-img" src="https://thrivefund.herokuapp.com/static/assets/team-4.jpg">
+                <div class="card-title-wrap">
+                  <span class="card-title">Sergio Fez</span> <span class="card-text">Art Director</span>
+                </div>
+
+                <div class="team-over">
+                  <h4 class="hidden-md-down">
+                    Connect with me
+                  </h4>
+
+                  <nav class="social-nav">
+                    <a href="#"><i class="bi bi-twitter"></i></a> <a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i class="bi bi-linkedin"></i></a> <a href="#"><i class="bi bi-envelope-fill"></i></a>
+                  </nav>
+
+                  <p>
+                    Lorem ipsum dolor sit amet, eu sed suas eruditi honestatis.
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </section><!-- End Team Section -->
+    <hr>
+
+
+
     <!-- ======= About Section ======= -->
     <section class="about" id="about">
 
       <div class="container text-center">
         <h2>
-          About Bell Template
+          About ROSCA
         </h2>
 
         <p>
-          Voluptua scripserit per ad, laudem viderer sit ex. Ex alia corrumpit voluptatibus usu, sed unum convenire id. Ut cum nisl moderatius, per nihil dicant commodo an. Eum tacimates erroribus ad. Atqui feugiat euripidis ea pri, sed veniam tacimates ex. Menandri
-          temporibus an duo.
+          The Rosca is a trusted and the first 'NO COMMISSION' social saving platform. You can create your group and invite other like-minded people especially friends and family from all over India and start saving or investing money. In times of need, you can also borrow money that is multiples of what you have invested by bidding. The Rosca gives you all the freedom to make your group according to your flexibility without any commission.
         </p>
 
         <div class="row stats-row">
           <div class="stats-col text-center col-md-3 col-sm-6">
             <div class="circle">
-              <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter stats-no">232</span>
-              Satisfied Customers
+              <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter stats-no">RO</span>
+              Rotating
             </div>
           </div>
 
           <div class="stats-col text-center col-md-3 col-sm-6">
             <div class="circle">
-              <span data-purecounter-start="0" data-purecounter-end="79" data-purecounter-duration="1" class="purecounter stats-no">79</span>
-              Released Projects
+              <span data-purecounter-start="0" data-purecounter-end="79" data-purecounter-duration="1" class="purecounter stats-no">S</span>
+              Savings
             </div>
           </div>
 
           <div class="stats-col text-center col-md-3 col-sm-6">
             <div class="circle">
-              <span data-purecounter-start="0" data-purecounter-end="1463" data-purecounter-duration="1" class="purecounter stats-no">1463</span>
-              Hours Of Support
+              <span data-purecounter-start="0" data-purecounter-end="1463" data-purecounter-duration="1" class="purecounter stats-no">C</span>
+              and Credit
             </div>
           </div>
 
+
           <div class="stats-col text-center col-md-3 col-sm-6">
             <div class="circle">
-              <span data-purecounter-start="0" data-purecounter-end="68" data-purecounter-duration="1" class="purecounter stats-no">68</span>
-              Hard Workers
+              <span data-purecounter-start="0" data-purecounter-end="68" data-purecounter-duration="1" class="purecounter stats-no">A</span>
+              Association
             </div>
           </div>
         </div>
       </div>
 
     </section><!-- End About Section -->
+    <hr>
 
     <!-- ======= Welcome Section ======= -->
-    <section class="welcome text-center">
+    <!-- <section class="welcome text-center">
       <h2>Welcome to a perfect theme</h2>
       <p>
         This is the most powerful theme with thousands of options that you have never seen before.
       </p>
-      <img alt="Bell - A perfect theme" class="gadgets-img hidden-md-down" src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80">
-    </section><!-- End Welcome Section -->
+      <img alt="ROSCA - A perfect theme" class="gadgets-img hidden-md-down" src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80">
+    </section> -->
+    <!-- End Welcome Section -->
 
-    <!-- ======= Features Section ======= -->
-    <section class="features" id="features">
+    <!-- ======= FAQ's Section ======= -->
+    <section class="features" id="faq">
 
       <div class="container">
         <h2 class="text-center">
-          Features
+          FAQ's
         </h2>
 
         <div class="row">
           <div class='col-md-12'>
-              <div class="accordion" id="accordionPanelsStayOpenExample">
+              <div class="accordion" id="accordionPanelsStayOpenExample" *ngFor='let f of faq;  let i = index'>
                 <div class="accordion-item">
-                  <h3 class="accordion-header" id="panelsStayOpen-headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                      Accordion Item #1
+                  <h3 class="accordion-header" id='panelsStayOpen-heading{{i}}'>
+                    <button class="accordion-button" [innerHTML] = "f.question" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#panelsStayOpen-collapse'+i" aria-expanded="false" [attr.aria-controls]="'#panelsStayOpen-collapse' + i">
+                      <!-- {{f.question}} -->
                     </button>
                   </h3>
-                  <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
-                    <div class="accordion-body">
-                      <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                    </div>
-                  </div>
-                </div>
-                <div class="accordion-item">
-                  <h3 class="accordion-header" id="panelsStayOpen-headingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                      Accordion Item #2
-                    </button>
-                  </h3>
-                  <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
-                    <div class="accordion-body">
-                      <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                    </div>
-                  </div>
-                </div>
-                <div class="accordion-item">
-                  <h3 class="accordion-header" id="panelsStayOpen-headingThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                      Accordion Item #3
-                    </button>
-                  </h3>
-                  <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
-                    <div class="accordion-body">
-                      <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                  <div id='panelsStayOpen-collapse{{i}}' class="accordion-collapse collapse" [attr.aria-laROSCAedby]='"panelsStayOpen-heading"+i'>
+                    <div class="accordion-body" [innerHTML]="f.answer">
+                      <!-- {{f.answer}} -->
+                      <!-- <strong>ROSCA is an online chit fund platform.</strong> It allows you to create your own group with your friends/family and selects a winner randomly. You can also bid for the money to receive the money that same month. -->
                     </div>
                   </div>
                 </div>
@@ -312,10 +480,10 @@
         </div>
       </div>
 
-    </section><!-- End Features Section -->
+    </section><!-- End FAQ's Section -->
 
     <!-- ======= Call to Action Section ======= -->
-    <section class="cta">
+    <!-- <section class="cta">
       <div class="container">
         <div class="row">
           <div class="col-lg-9 col-sm-12 text-lg-start text-center">
@@ -333,19 +501,17 @@
           </div>
         </div>
       </div>
-    </section><!-- End Call to Action Section -->
+    </section> -->
 
-    <!-- ======= Portfolio Section ======= -->
-    <section class="portfolio" id="portfolio">
+    <!-- End Call to Action Section -->
+
+    <!-- ======= Pricing Section ======= -->
+    <section class="portfolio" id="pricing">
 
       <div class="container text-center">
         <h2>
-          Portfolio
+          Pricing
         </h2>
-
-        <p>
-          Voluptua scripserit per ad, laudem viderer sit ex. Ex alia corrumpit voluptatibus usu, sed unum convenire id. Ut cum nisl moderatius, Per nihil dicant commodo an.
-        </p>
       </div>
 
 
@@ -354,36 +520,34 @@
   <div class="container">
     <div class="row">
       <!-- Free Tier -->
-      <div class="col-lg-4">
+      <div class="col-lg-5">
         <div class="card mb-5 mb-lg-0">
           <div class="card-body">
             <h5 class="card-title text-muted text-uppercase text-center">Free</h5>
-            <h6 class="card-price text-center">$0<span class="period">/month</span></h6>
+            <h6 class="card-price text-center">₹0<span class="period">/month</span></h6>
             <hr>
             <ul class="fa-ul">
-              <li><span class="fa-li"><i class="fas fa-check"></i></span>Single User</li>
-              <li><span class="fa-li"><i class="fas fa-check"></i></span>5GB Storage</li>
-              <li><span class="fa-li"><i class="fas fa-check"></i></span>Unlimited Public Projects</li>
-              <li><span class="fa-li"><i class="fas fa-check"></i></span>Community Access</li>
-              <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Unlimited
-                Private Projects</li>
-              <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Dedicated
-                Phone Support</li>
-              <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Free Subdomain
+              <li><span class="fa-li"><i class="fas fa-check"></i></span>Create unlimited groups</li>
+              <li><span class="fa-li"><i class="fas fa-check"></i></span>Participate in unlimited group</li>
+              <li><span class="fa-li"><i class="fas fa-check"></i></span>Add users</li>
+              <li><span class="fa-li"><i class="fas fa-check"></i></span>Delete group before it starts</li>
+              <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span><del>Bid in unlimited groups every month</del></li>
+              <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span><del>Create groups with daily, weekly, bi-monthly chits</del></li>
+              <!-- <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span><del></del>
               </li>
               <li class="text-muted"><span class="fa-li"><i class="fas fa-times"></i></span>Monthly Status
-                Reports</li>
+                Reports</li> -->
             </ul>
-            <div class="d-grid">
+            <!-- <div class="d-grid">
               <a href="#" class="btn btn-primary text-uppercase">Button</a>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
       <!-- Plus Tier -->
-      <div class="col-lg-4">
-        <div class="card mb-5 mb-lg-0">
-          <div class="card-body">
+      <!-- <div class="col-lg-4">
+        <div class="card mb-5 mb-lg-0"> -->
+          <!-- <div class="card-body">
             <h5 class="card-title text-muted text-uppercase text-center">Superuser</h5>
             <h6 class="card-price text-center text-xsm"><small><s>₹999</s></small><span class="period">/month</span></h6>
             <h6 class="card-price text-center">₹99<span class="period">/month</span></h6>
@@ -401,31 +565,28 @@
             <div class="d-grid">
               <a href="#" class="btn btn-primary text-uppercase">Button</a>
             </div>
-          </div>
-        </div>
-      </div>
+          </div> -->
+        <!-- </div>
+      </div> -->
       <!-- Pro Tier -->
-      <div class="col-lg-4">
+      <div class="col-lg-5">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title text-muted text-uppercase text-center">Pro</h5>
-            <h6 class="card-price text-center">$49<span class="period">/month</span></h6>
+            <h5 class="card-title text-muted text-uppercase text-center">Superuser</h5>
+            <h6 class="card-price text-center text-xsm"><small><s>₹999</s></small><span class="period">/month</span></h6>
+            <h6 class="card-price text-center">₹99<span class="period">/month+taxes</span></h6>
             <hr>
             <ul class="fa-ul">
-              <li><span class="fa-li"><i class="fas fa-check"></i></span><strong>Unlimited Users</strong>
-              </li>
-              <li><span class="fa-li"><i class="fas fa-check"></i></span>150GB Storage</li>
-              <li><span class="fa-li"><i class="fas fa-check"></i></span>Unlimited Public Projects</li>
-              <li><span class="fa-li"><i class="fas fa-check"></i></span>Community Access</li>
-              <li><span class="fa-li"><i class="fas fa-check"></i></span>Unlimited Private Projects</li>
-              <li><span class="fa-li"><i class="fas fa-check"></i></span>Dedicated Phone Support</li>
-              <li><span class="fa-li"><i class="fas fa-check"></i></span><strong>Unlimited</strong> Free
-                Subdomains</li>
-              <li><span class="fa-li"><i class="fas fa-check"></i></span>Monthly Status Reports</li>
+              <li><span class="fa-li"><i class="fas fa-check"></i></span>Create unlimited groups</li>
+              <li><span class="fa-li"><i class="fas fa-check"></i></span>Participate in unlimited group</li>
+              <li><span class="fa-li"><i class="fas fa-check"></i></span>Add users</li>
+              <li><span class="fa-li"><i class="fas fa-check"></i></span>Delete group before it starts</li>
+              <li><span class="fa-li"><i class="fas fa-times"></i></span><strong>Bid in unlimited groups every month.</strong></li>
+              <li><span class="fa-li"><i class="fas fa-times"></i></span><strong>Create groups with daily, weekly, bi-monthly chits</strong></li>
             </ul>
-            <div class="d-grid">
+            <!-- <div class="d-grid">
               <a href="#" class="btn btn-primary text-uppercase">Button</a>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -435,7 +596,7 @@
 
 
 
-
+<!--
       <div class="portfolio-grid">
         <div class="row">
           <div class="col-lg-3 col-sm-6 col-xs-12">
@@ -584,115 +745,8 @@
             </div>
           </div>
         </div>
-      </div>
-    </section><!-- End Portfolio Section -->
-
-    <!-- ======= Team Section ======= -->
-    <section class="team" id="team">
-      <div class="container">
-        <h2 class="text-center">
-          Meet our team
-        </h2>
-
-        <div class="row">
-          <div class="col-sm-3 col-xs-6">
-            <div class="card card-block">
-              <a href="#"><img alt="" class="team-img" src="https://thrivefund.herokuapp.com/static/assets/team-1.jpg">
-                <div class="card-title-wrap">
-                  <span class="card-title">Sergio Fez</span> <span class="card-text">Art Director</span>
-                </div>
-
-                <div class="team-over">
-                  <h4 class="hidden-md-down">
-                    Connect with me
-                  </h4>
-
-                  <nav class="social-nav">
-                    <a href="#"><i class="bi bi-twitter"></i></a> <a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i class="bi bi-linkedin"></i></a> <a href="#"><i class="bi bi-envelope-fill"></i></a>
-                  </nav>
-
-                  <p>
-                    Lorem ipsum dolor sit amet, eu sed suas eruditi honestatis.
-                  </p>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <div class="col-sm-3 col-xs-6">
-            <div class="card card-block">
-              <a href="#"><img alt="" class="team-img" src="https://thrivefund.herokuapp.com/static/assets/team-2.jpg">
-                <div class="card-title-wrap">
-                  <span class="card-title">Sergio Fez</span> <span class="card-text">Art Director</span>
-                </div>
-
-                <div class="team-over">
-                  <h4 class="hidden-md-down">
-                    Connect with me
-                  </h4>
-
-                  <nav class="social-nav">
-                    <a href="#"><i class="bi bi-twitter"></i></a> <a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i class="bi bi-linkedin"></i></a> <a href="#"><i class="bi bi-envelope-fill"></i></a>
-                  </nav>
-
-                  <p>
-                    Lorem ipsum dolor sit amet, eu sed suas eruditi honestatis.
-                  </p>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <div class="col-sm-3 col-xs-6">
-            <div class="card card-block">
-              <a href="#"><img alt="" class="team-img" src="https://thrivefund.herokuapp.com/static/assets/team-3.jpg">
-                <div class="card-title-wrap">
-                  <span class="card-title">Sergio Fez</span> <span class="card-text">Art Director</span>
-                </div>
-
-                <div class="team-over">
-                  <h4 class="hidden-md-down">
-                    Connect with me
-                  </h4>
-
-                  <nav class="social-nav">
-                    <a href="#"><i class="bi bi-twitter"></i></a> <a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i class="bi bi-linkedin"></i></a> <a href="#"><i class="bi bi-envelope-fill"></i></a>
-                  </nav>
-
-                  <p>
-                    Lorem ipsum dolor sit amet, eu sed suas eruditi honestatis.
-                  </p>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <div class="col-sm-3 col-xs-6">
-            <div class="card card-block">
-              <a href="#"><img alt="" class="team-img" src="https://thrivefund.herokuapp.com/static/assets/team-4.jpg">
-                <div class="card-title-wrap">
-                  <span class="card-title">Sergio Fez</span> <span class="card-text">Art Director</span>
-                </div>
-
-                <div class="team-over">
-                  <h4 class="hidden-md-down">
-                    Connect with me
-                  </h4>
-
-                  <nav class="social-nav">
-                    <a href="#"><i class="bi bi-twitter"></i></a> <a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i class="bi bi-linkedin"></i></a> <a href="#"><i class="bi bi-envelope-fill"></i></a>
-                  </nav>
-
-                  <p>
-                    Lorem ipsum dolor sit amet, eu sed suas eruditi honestatis.
-                  </p>
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section><!-- End Team Section -->
+      </div> -->
+    </section><!-- End Pricing Section -->
 
     <!-- ======= Contact Section ======= -->
     <section id="contact">
@@ -706,26 +760,33 @@
         <div class="row justify-content-center">
           <div class="col-lg-3 col-md-4">
             <div class="info">
-              <div>
-                <i class="bi bi-geo-alt"></i>
-                <p>A108 Adam Street<br>New York, NY 535022</p>
-              </div>
-
-              <div>
-                <i class="bi bi-envelope"></i>
-                <p>info@example.com</p>
-              </div>
-
-              <div>
-                <i class="bi bi-phone"></i>
-                <p>+1 5589 55488 55s</p>
-              </div>
-
+              <img alt="ROSCA Logo" class='contact-img' src="https://therosca.herokuapp.com/static/assets/rosca-logo.png">
             </div>
           </div>
 
           <div class="col-lg-5 col-md-8">
-            <div class="form">
+            <div class="info">
+
+            <div class="links" id="bordering"> <a href="tel:7042704745" class="btn rounded p-3"><fa-icon class='text-primary pr-3' [icon]="faPhoneAlt"></fa-icon>+91-7042704745</a> <a href="mailto:support@therosca.in" class="btn rounded p-3"><fa-icon class='text-primary pr-3' [icon]="faEnvelopeOpenText"></fa-icon>support@therosca.in</a>
+             </div>
+            <div class="pt-lg-4 d-flex flex-row justify-content-evenly">
+                <div class="pad-icon"> <fa-icon class='text-primary pr-3' [icon]="faFacebook"></fa-icon> </div>
+                <div class="pad-icon"> <fa-icon class='text-primary pr-3' [icon]="faInstagram"></fa-icon> </div>
+                <div class="pad-icon"> <fa-icon class='text-primary pr-3' [icon]="faYoutube"></fa-icon></div>
+            </div>
+
+              <!-- <div>
+                <fa-icon [icon]="faEnvelopeOpenText"></fa-icon>
+                <p>info@therosca.in</p>
+              </div>
+
+              <div>
+                <fa-icon [icon]="faPhoneAlt"></fa-icon>
+                <a href="tel:7042704745"><p>+91-7042704745</p></a>
+              </div> -->
+
+            </div>
+            <!-- <div class="form">
               <form action="forms/contact.php" method="post" role="form" class="php-email-form">
                 <div class="form-group">
                   <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required>
@@ -746,7 +807,7 @@
                 </div>
                 <div class="text-center"><button type="submit">Send Message</button></div>
               </form>
-            </div>
+            </div> -->
           </div>
 
         </div>
@@ -763,14 +824,21 @@
 
           <div class="col-lg-6 col-xs-12 text-lg-start text-center">
             <p class="copyright-text">
-              &copy; Copyright <strong>Trive</strong>. All Rights Reserved
+              &copy; Copyright <strong>ROSCA</strong>. All Rights Reserved
             </p>
           </div>
 
           <div class="col-lg-6 col-xs-12 text-lg-right text-center">
             <ul class="list-inline">
-              <li class="list-inline-item">
-                <a href="index.html">Home</a>
+              <li class="list-inline-item"><a class="scrollto" href="#hero">Home</a></li>
+              <li class="list-inline-item"><a class="scrollto" href="#works">How it works?</a></li>
+              <li class="list-inline-item"><a class="scrollto" href="#about">About</a></li>
+              <li class="list-inline-item"><a class="scrollto" href="#faq">FAQ's</a></li>
+              <li class="list-inline-item"><a class="scrollto " href="#pricing">Pricing</a></li>
+              <li class="list-inline-item"><a class="scrollto" href="#contact">Contact</a></li>
+              <li class="list-inline-item"><a class="scrollto" routerLink='/login'>Login</a></li>
+              <!-- <li class="list-inline-item">
+                <a href="#hero">Home</a>
               </li>
 
               <li class="list-inline-item">
@@ -791,7 +859,7 @@
 
               <li class="list-inline-item">
                 <a href="#contact">Contact</a>
-              </li>
+              </li> -->
             </ul>
           </div>
 

@@ -3,6 +3,7 @@ import { HttpService } from '../http.service';
 import { LoginFormModel } from '../login-form-model';
 import {Router} from "@angular/router"
 import {MatSnackBar} from '@angular/material/snack-bar';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -17,7 +18,12 @@ export class LoginComponent implements OnInit {
 
 
 
-  constructor(private _httpService:HttpService, private router: Router, private _snackBar: MatSnackBar) { }
+  constructor(private _httpService:HttpService, private router: Router, private _snackBar: MatSnackBar, private titleService:Title) {
+    const title = ['Login'];
+    // console.log(this.titleService.getTitle());
+    this.titleService.setTitle(([this.titleService.getTitle() , title]).join(' | '));
+
+   }
 
   ngOnInit(): void {
     this.token = localStorage.getItem("token");
@@ -35,7 +41,6 @@ export class LoginComponent implements OnInit {
     this._httpService.login(this.loginModel)
     .subscribe(
       data => {
-        console.log(data);
         let jsonObj: any = JSON.parse(JSON.stringify(data));
         let user = jsonObj.user
         let token = jsonObj.token
@@ -46,8 +51,8 @@ export class LoginComponent implements OnInit {
 
     },
       error => {
-        console.log("error" , error)
-        this.openSnackBar("Email or password wrong", "close");
+        console.log("error" , error);
+        this.openSnackBar("Username or password wrong", "close");
 
     }
       );

@@ -1,13 +1,19 @@
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-custom">
   <div class="container">
-    <a class="navbar-brand" routerLink='/'>Thrive</a>
+    <a class="navbar-brand" routerLink='/'><img class="rosca-logo"  src="https://therosca.herokuapp.com/static/assets/rosca-logo.png" alt="rosca-logo"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
-        <li class="nav-item">
-          <!-- <a class="nav-link active" aria-current="page" routerLink=''>Home</a> -->
+      <li class="nav-item"><a class="nav-link" href="/#hero">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="/#works">How it works?</a></li>
+      <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+      <li class="nav-item"><a class="nav-link" href="#faq">FAQ's</a></li>
+      <li class="nav-item"><a class="nav-link " href="#pricing">Pricing</a></li>
+      <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        <!-- <li class="nav-item">
+          <a class="nav-link active" aria-current="page" routerLink=''>Home</a>
           <a class="nav-link scrollto" href="#hero">Home</a>
         </li>
         <li class="nav-item">
@@ -26,13 +32,13 @@
           <a class="nav-link scrollto" href="#team">Team</a>
         </li>
 
-        <!-- <li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link" href="#">Features</a>
-        </li> -->
+        </li>
 
         <li class="nav-item">
           <a class="nav-link scrollto" href="#contact">Contact</a>
-        </li>
+        </li> -->
 
         <li class="nav-item">
           <a class="nav-link" *ngIf="!token" routerLink='/login'>Login</a>

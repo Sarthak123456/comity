@@ -14,6 +14,21 @@ footer{
   width: 100%;
 }
 
+::ng-deep sup{
+top: 5px;
+font-size: 22px;
+}
+
+::ng-deep .container h1{
+text-align: center;
+}
+
+::ng-deep  .bg-custom{
+  background-color:#54C5CC;
+  color: white;
+
+}
+
 ::ng-deep html * {
   font-family: "Raleway", Helvetica, Arial, sans-serif;
   /* color: red !important; */
