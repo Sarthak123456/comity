@@ -485,7 +485,8 @@ def getAllGroups(request):
                     "minBidAmount": minBidAmount,
                     # "dateAfterOneDays_date": convertMilisToDatetime(currentGroup.bid_date).date() if currentGroup.bid_date else None,
                     # "dateAfterOneDays_time": dateAfterOneDays.time(),
-                    "bidEndDate": dateAfterOneDays.date(),
+                    "bidEndDate": convertMilisToDatetime(currentGroup.bid_date).date() if currentGroup.bid_date else None,
+                    "bidEndDateInMilis": currentGroup.bid_date if currentGroup.bid_date else None,
                     "admin" : currentGroup.created_by_user.username,
                     "name" : currentGroup.name,
                     "duration" : currentGroup.duration,
@@ -545,8 +546,8 @@ def deactivateSubscription(request):
 
 def createRazorPayOrderId(request):
     if request.method == 'POST':
-        secret_id= 'rzp_test_nu9LsvfHJHqHQx'
-        secret_key = 'vqt4RvJIR5NeyWfMAcWcGuPY'
+        secret_id= 'rzp_live_sioclijuytb3Mp'
+        secret_key = 'jKpz9OPR9taxWTHhWFX3Feyh'
 
         client = razorpay.Client(auth=(secret_id, secret_key))
         order_amount = request.POST.get('order_amount')

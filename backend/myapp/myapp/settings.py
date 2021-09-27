@@ -159,15 +159,25 @@ MEDIA_URL = ''
 
 #Added manually
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static"),
-#     '/var/www/static/',
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    '/var/www/static/',
+]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+#
+# CRONJOBS = [
+#     ('1 0 * * *', 'cron.my_cron_job')
+# ]
 
-CRONJOBS = [
-    ('1 0 * * *', 'cron.my_cron_job')
-]
+#SMPT conf
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp-relay.sendinblue.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'sarthak.tuteja@yahoo.com'
+EMAIL_HOST_PASSWORD = '92BfGmx3NLQZHa5A'
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = 'sarthak.tuteja91@gmail.com'
+

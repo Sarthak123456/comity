@@ -1,6 +1,8 @@
+from django.conf.urls import url
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, reverse_lazy, include
 from comity import views
+from django.contrib.auth import views as auth_views
 from django.conf import  settings
 from django.conf.urls.static import  static
 from django.views.decorators.csrf import csrf_exempt
@@ -34,6 +36,13 @@ urlpatterns = [
     path('delete/group/user/', csrf_exempt(views.deleteUsersInGroup)),
     path('get/razorpay/order_id/', csrf_exempt(views.createRazorPayOrderId)),
     path('get/razorpay/save/', csrf_exempt(views.verifyAndSavePayment)),
+    url('^', include('django.contrib.auth.urls')),
+    url(r'^password_reset/$', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    url(r'^password_reset/done/$', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    url(r'^reset/<uidb64>/<token>',
+          auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    url(r'^reset/done/$', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete')
+
 
 
 

@@ -11,7 +11,6 @@ import pytz
 from dateutil.relativedelta import relativedelta
 
 def my_cron_job():
-    print('sample cron job')
     groups = group_info_table.objects.all()
     users = User.objects.all()
     for user in users:
@@ -33,7 +32,7 @@ def my_cron_job():
 
     for group in groups:
         if group.status == 'active':
-            print("Active group: ",  group.id)
+            print("Active group: ",  convertMilisToDatetime(group.bid_date))
             id = group.id
             currentGroup = group_info_table.objects.get(id=id)
             # Getting 2 days after the end_date since at midnight the date changes
@@ -78,7 +77,7 @@ def my_cron_job():
             if (getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(group.end_date).date()):
             # if (getCurrentDateInLocalTimezone().date() == convertMilisToDatetime(currentGroup.bid_date)):
                 print("allWinners = %s", allWinners)
-                bid.objects.filter(g_id=id).delete()
+                # bid.objects.filter(g_id=id).delete()
                 winner = bid.objects.select_related().filter(g_id=id, bidAmount__gt=0).order_by('bidAmount').last()
 
                 # import pdb;

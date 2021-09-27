@@ -8,33 +8,33 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <title>{% block title %} {% endblock title %} | Comity App</title>
+    <title>Rosca - India's only 'No Comission' chit fund, chitty, kuri, bhishi.</title>
   </head>
   <body>
 
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Navbar</a>
+<nav class="navbar navbar-expand-lg" style="background-color:#54C5CC !important">
+  <a class="navbar-brand" href="http://localhost:4200/login"><img alt="ROSCA Logo" src="/static/assets/rosca-logo.png" style="max-height: 200px; margin: -200px 0;"/></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/about">About Us</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/services">Services</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/profile">Profile</a>
-      </li>
-       <li class="nav-item">
-        <a class="nav-link" href='/logout'>Logout</a>
-      </li>
+<!--      <li class="nav-item active">-->
+<!--        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>-->
+<!--      </li>-->
+<!--      <li class="nav-item">-->
+<!--        <a class="nav-link" href="/about">About Us</a>-->
+<!--      </li>-->
+<!--      <li class="nav-item">-->
+<!--        <a class="nav-link" href="/services">Services</a>-->
+<!--      </li>-->
+<!--      <li class="nav-item">-->
+<!--        <a class="nav-link" href="/profile">Profile</a>-->
+<!--      </li>-->
+<!--       <li class="nav-item">-->
+<!--        <a class="nav-link" href='/logout'>Logout</a>-->
+<!--      </li>-->
       <!-- <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Dropdown link
@@ -46,23 +46,23 @@
         </div>
       </li> -->
 
-      <li class="nav-item">
-        <a class="nav-link">{{request.user}}</a>
-      </li>
+<!--      <li class="nav-item">-->
+<!--        <a class="nav-link">{{request.user}}</a>-->
+<!--      </li>-->
     </ul>
   </div>
 </nav>
 
-{% if messages %}
- {% for message in messages %}
-<div class="alert alert-{{ message.tags }} alert-dismissible fade show my-0" role="alert">
-  <strong> {{ message }} </strong>
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-{% endfor %}
-{% endif %}
+<!--{% if messages %}-->
+<!-- {% for message in messages %}-->
+<!--<div class="alert alert-{{ message.tags }} alert-dismissible fade show my-0" role="alert">-->
+<!--  <strong> {{ message }} </strong>-->
+<!--  <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+<!--    <span aria-hidden="true">&times;</span>-->
+<!--  </button>-->
+<!--</div>-->
+<!--{% endfor %}-->
+<!--{% endif %}-->
 
 {% block body %} {% endblock body %}
     <!-- Optional JavaScript -->

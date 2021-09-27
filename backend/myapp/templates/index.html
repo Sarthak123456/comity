@@ -6,10 +6,6 @@
 <h1> Welcome {{request.user}}</h1>
 <a href='logout'>Logout</a>
 
-{% comment %} {% for user in users %}
-{{user.id }} : {{ user.username }};
-{% endfor %} {% endcomment %}
-
 <form action = "/addGroup" method = "post">
 {% csrf_token %}
   <div class="form-group">
